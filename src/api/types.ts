@@ -1,10 +1,10 @@
 import z from "zod";
 
 export type ApiResponse<T> = {
-  success: boolean; // true if request succeeded
-  message: string; // success or error message
-  data: T | null; // the actual payload
-  error: any | null; // backend error or validation info
+  success: boolean;
+  message: string;
+  data: T | null;
+  error: any | null;
 };
 
 export type PrayerTimes = {
@@ -87,4 +87,69 @@ export type TNoticeUpdate = {
   start_date?: string | undefined;
   end_date?: string | undefined;
   is_active?: boolean | undefined;
+};
+
+export type Ramadan = {
+  suhur_end: string;
+  taraweeh: string;
+};
+
+export type TRamadanUpdate = {
+  suhur_end?: string | undefined;
+  taraweeh?: string | undefined;
+};
+
+export type Settings = {
+  mosque_name: string;
+  language_code: string;
+  time_format: number;
+  is_ramadan: boolean;
+  primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+  background_color: string;
+  foreground_color: string;
+} | null;
+
+export type TSettingsColumn =
+  | "mosque_name"
+  | "language_code"
+  | "time_format"
+  | "is_ramadan"
+  | "primary_color"
+  | "secondary_color"
+  | "accent_color"
+  | "background_color"
+  | "foreground_color";
+
+export type TSettingsValues = string | boolean | 24 | 12 | null | undefined;
+
+export type TSettingsUpdate = {
+  mosque_name?: string | undefined;
+  language_code?: string | undefined;
+  time_format?: 24 | 12 | undefined;
+  is_ramadan?: boolean | undefined;
+  primary_color?: string | undefined;
+  secondary_color?: string | undefined;
+  accent_color?: string | undefined;
+  background_color?: string | undefined;
+  foreground_color?: string | undefined;
+};
+
+export type Translations = {
+  language_code: string;
+  category: string;
+  key: string;
+  value: string;
+};
+
+export type TTranslationsInsert = {
+  language_code: string;
+  category: string;
+  key: string;
+  value: string;
+};
+
+export type TTranslationsUpdate = {
+  value?: string | undefined;
 };
