@@ -24,13 +24,15 @@ export default function App() {
             <Link className="mr-4" to="/">
               Home
             </Link>
-            <Link to="/about" className="mr-4">
-              About
+            <Link to="/ikamah" className="mr-4">
+              Ikamah
             </Link>
-            <Link to="/sample" className="mr-4">
-              Sample
+            <Link to="/language" className="mr-4">
+              Language
             </Link>
-            <Link to="/prayer">Prayer</Link>
+            <Link to="/prayer" className="mr-4">
+              Prayer
+            </Link>
           </nav>
           <AppRoutes />
         </BrowserRouter>

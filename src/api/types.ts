@@ -36,3 +36,30 @@ export type TPrayerTimeUpdate = {
   maghrib?: string | undefined;
   isha?: string | undefined;
 };
+
+export type Ikamah = {
+  fajr: number;
+  dhuhr: number;
+  asr: number;
+  maghrib: number;
+  isha: number;
+  jummah: number;
+};
+
+export type TIkamahUpdate = {
+  fajr?: number | undefined;
+  dhuhr?: number | undefined;
+  asr?: number | undefined;
+  maghrib?: number | undefined;
+  isha?: number | undefined;
+  jummah?: number | undefined;
+};
+
+export type IkamahTime = {
+  fajr: string;
+  dhuhr: string;
+  asr: string;
+  maghrib: string;
+  isha: string;
+  jummah: string;
+} | null;

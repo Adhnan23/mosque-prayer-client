@@ -1,7 +1,7 @@
-import { useGetLanguages } from "../hooks";
+import { useLanguages } from "../hooks";
 
 export default function Home() {
-  const { data, error, isPending } = useGetLanguages();
+  const { data, error, isPending } = useLanguages.get();
   return (
     <>
       <h1>Available Languages</h1>
