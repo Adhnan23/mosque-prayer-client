@@ -63,3 +63,28 @@ export type IkamahTime = {
   isha: string;
   jummah: string;
 } | null;
+
+export type Notice = {
+  id: number;
+  language_code: string;
+  content: string;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
+};
+
+export type TNoticeInsert = {
+  language_code: string;
+  content: string;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
+};
+
+export type TNoticeUpdate = {
+  language_code?: string | undefined;
+  content?: string | undefined;
+  start_date?: string | undefined;
+  end_date?: string | undefined;
+  is_active?: boolean | undefined;
+};

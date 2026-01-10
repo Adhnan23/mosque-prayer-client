@@ -17,7 +17,7 @@ export const LanguagesApi = {
       url: `/languages/${code}`,
     });
 
-    if (!data) throw new Error("No language found");
+    if (!data || data.length === 0) throw new Error("No language found");
     return data;
   },
   insert: async (body: Languages) => {

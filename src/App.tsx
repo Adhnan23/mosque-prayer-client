@@ -33,6 +33,9 @@ export default function App() {
             <Link to="/prayer" className="mr-4">
               Prayer
             </Link>
+            <Link to="/notice" className="mr-4">
+              Notice
+            </Link>
           </nav>
           <AppRoutes />
         </BrowserRouter>
