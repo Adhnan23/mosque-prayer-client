@@ -8,6 +8,7 @@ import RamadanTestPage from "../pages/Ramadan";
 import SettingsTestPage from "../pages/Settings";
 import TranslationsTestPage from "../pages/Translations";
 import MainLayout from "../layouts";
+import PrayerDisplayTV from "../pages/Display";
 
 export default function AppRoutes() {
   return (
@@ -22,6 +23,7 @@ export default function AppRoutes() {
         <Route path="/settings" element={<SettingsTestPage />} />
         <Route path="/translations" element={<TranslationsTestPage />} />
       </Route>
+      <Route path="/display" element={<PrayerDisplayTV />} />
     </Routes>
   );
 }
