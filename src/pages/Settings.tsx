@@ -10,6 +10,7 @@ const SettingsTestPage = () => {
     language_code: undefined,
     time_format: undefined,
     is_ramadan: undefined,
+    hijri_offset: undefined,
     primary_color: undefined,
     secondary_color: undefined,
     accent_color: undefined,
@@ -49,6 +50,7 @@ const SettingsTestPage = () => {
         language_code: getQuery.data.language_code,
         time_format: getQuery.data.time_format as 12 | 24,
         is_ramadan: getQuery.data.is_ramadan,
+        hijri_offset: getQuery.data.hijri_offset,
         primary_color: getQuery.data.primary_color,
         secondary_color: getQuery.data.secondary_color,
         accent_color: getQuery.data.accent_color,
@@ -78,6 +80,7 @@ const SettingsTestPage = () => {
         language_code: getQuery.data.language_code,
         time_format: getQuery.data.time_format as 12 | 24,
         is_ramadan: getQuery.data.is_ramadan,
+        hijri_offset: getQuery.data.hijri_offset,
         primary_color: getQuery.data.primary_color,
         secondary_color: getQuery.data.secondary_color,
         accent_color: getQuery.data.accent_color,
@@ -92,6 +95,7 @@ const SettingsTestPage = () => {
     { value: "language_code", label: "Language Code" },
     { value: "time_format", label: "Time Format" },
     { value: "is_ramadan", label: "Is Ramadan" },
+    { value: "hijri_offset", label: "Hijri Offset" },
     { value: "primary_color", label: "Primary Color" },
     { value: "secondary_color", label: "Secondary Color" },
     { value: "accent_color", label: "Accent Color" },
@@ -146,6 +150,12 @@ const SettingsTestPage = () => {
                       <span className="text-gray-600">Time Format:</span>
                       <span className="font-medium">
                         {getQuery.data.time_format}h
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Hijri Offset:</span>
+                      <span className="font-medium">
+                        {getQuery.data.hijri_offset}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -373,6 +383,24 @@ const SettingsTestPage = () => {
                       <span className="text-sm">🌙 Enable Ramadan Mode</span>
                     </label>
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Hijri Offset
+                  </label>
+                  <input
+                    type="number"
+                    value={updateData.hijri_offset || 0}
+                    onChange={(e) =>
+                      setUpdateData({
+                        ...updateData,
+                        hijri_offset: Number(e.target.value) || undefined,
+                      })
+                    }
+                    placeholder="Enter hijri offset"
+                    className="border rounded px-3 py-2 w-full"
+                  />
                 </div>
               </div>
             </div>

@@ -104,6 +104,7 @@ export type Settings = {
   language_code: string;
   time_format: number;
   is_ramadan: boolean;
+  hijri_offset: number;
   primary_color: string;
   secondary_color: string;
   accent_color: string;
@@ -116,6 +117,7 @@ export type TSettingsColumn =
   | "language_code"
   | "time_format"
   | "is_ramadan"
+  | "hijri_offset"
   | "primary_color"
   | "secondary_color"
   | "accent_color"
@@ -129,6 +131,7 @@ export type TSettingsUpdate = {
   language_code?: string | undefined;
   time_format?: 24 | 12 | undefined;
   is_ramadan?: boolean | undefined;
+  hijri_offset?: number | undefined;
   primary_color?: string | undefined;
   secondary_color?: string | undefined;
   accent_color?: string | undefined;

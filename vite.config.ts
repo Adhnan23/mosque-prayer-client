@@ -12,9 +12,10 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
-  base: "/",
+  base: "./",
   build: {
     emptyOutDir: true,
+    outDir: "../mosque-prayer-server/public",
   },
   server: {
     proxy: {

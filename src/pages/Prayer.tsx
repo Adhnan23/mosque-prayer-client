@@ -485,7 +485,13 @@ const PrayerTimesTestPage = () => {
               </div>
               <button
                 onClick={handleUpdate}
-                disabled={updateMutation.isPending || !month || !day}
+                disabled={
+                  updateMutation.isPending ||
+                  !month ||
+                  !day ||
+                  !!endMonth ||
+                  !!endDay
+                }
                 className="w-full bg-blue-600 text-white py-2 rounded font-medium hover:bg-blue-700 transition disabled:bg-gray-400"
               >
                 {updateMutation.isPending
