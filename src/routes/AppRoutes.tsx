@@ -7,18 +7,21 @@ import NoticeTestPage from "../pages/Notice";
 import RamadanTestPage from "../pages/Ramadan";
 import SettingsTestPage from "../pages/Settings";
 import TranslationsTestPage from "../pages/Translations";
+import MainLayout from "../layouts";
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/language" element={<LanguagesTestPage />} />
-      <Route path="/prayer" element={<PrayerTimesTestPage />} />
-      <Route path="/ikamah" element={<IkamahTestPage />} />
-      <Route path="/notice" element={<NoticeTestPage />} />
-      <Route path="/ramadan" element={<RamadanTestPage />} />
-      <Route path="/settings" element={<SettingsTestPage />} />
-      <Route path="/translations" element={<TranslationsTestPage />} />
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/languages" element={<LanguagesTestPage />} />
+        <Route path="/prayer" element={<PrayerTimesTestPage />} />
+        <Route path="/ikamah" element={<IkamahTestPage />} />
+        <Route path="/notice" element={<NoticeTestPage />} />
+        <Route path="/ramadan" element={<RamadanTestPage />} />
+        <Route path="/settings" element={<SettingsTestPage />} />
+        <Route path="/translations" element={<TranslationsTestPage />} />
+      </Route>
     </Routes>
   );
 }

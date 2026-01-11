@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNotice } from "../hooks";
+import { useNotice, useLanguages } from "../hooks";
 import type {
   TNoticeInsert,
   TNoticeUpdate,
@@ -67,6 +67,7 @@ const NoticeTestPage = () => {
   const getAllQuery = useNotice.get(activeFilterValue);
   const getByIdQuery = useNotice.getById(debouncedId ? Number(debouncedId) : 0);
   const getByCodeQuery = useNotice.getByCode(debouncedCode as LanguageCode);
+  const languagesQuery = useLanguages.get();
 
   // Mutations
   const insertMutation = useNotice.insert();
@@ -339,17 +340,22 @@ const NoticeTestPage = () => {
               <label className="block text-sm font-medium mb-2">
                 Language Code
               </label>
-              <input
-                type="text"
+              <select
                 value={searchCode}
                 onChange={(e) => setSearchCode(e.target.value)}
-                placeholder="e.g., en, es, fr"
                 className="border rounded px-3 py-2 w-full"
-                maxLength={4}
-              />
-              {searchCode !== debouncedCode && (
-                <div className="text-orange-600 text-sm mt-1 animate-pulse">
-                  ⏳ Typing...
+              >
+                <option value="">Select language</option>
+                {languagesQuery.data &&
+                  languagesQuery.data.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name} ({lang.code})
+                    </option>
+                  ))}
+              </select>
+              {languagesQuery.isPending && (
+                <div className="text-xs text-gray-500 mt-1">
+                  Loading languages...
                 </div>
               )}
             </div>
@@ -380,7 +386,7 @@ const NoticeTestPage = () => {
 
             {!debouncedCode && (
               <div className="text-gray-400 text-center py-8">
-                Enter a language code to search
+                Select a language code to search
               </div>
             )}
           </div>
@@ -398,8 +404,7 @@ const NoticeTestPage = () => {
                 <label className="block text-sm font-medium mb-2">
                   Language Code <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   value={insertData.language_code}
                   onChange={(e) =>
                     setInsertData({
@@ -407,10 +412,26 @@ const NoticeTestPage = () => {
                       language_code: e.target.value,
                     })
                   }
-                  placeholder="e.g., en, es, fr"
                   className="border rounded px-3 py-2 w-full"
-                  maxLength={4}
-                />
+                >
+                  <option value="">Select language</option>
+                  {languagesQuery.data &&
+                    languagesQuery.data.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.name} ({lang.code})
+                      </option>
+                    ))}
+                </select>
+                {languagesQuery.isPending && (
+                  <div className="text-xs text-gray-500 mt-1">
+                    Loading languages...
+                  </div>
+                )}
+                {languagesQuery.error && (
+                  <div className="text-xs text-red-500 mt-1">
+                    Failed to load languages
+                  </div>
+                )}
               </div>
 
               <div>
@@ -517,8 +538,7 @@ const NoticeTestPage = () => {
                 <label className="block text-sm font-medium mb-2">
                   Language Code
                 </label>
-                <input
-                  type="text"
+                <select
                   value={updateData.language_code || ""}
                   onChange={(e) =>
                     setUpdateData({
@@ -526,10 +546,21 @@ const NoticeTestPage = () => {
                       language_code: e.target.value || undefined,
                     })
                   }
-                  placeholder="Leave empty to keep current"
                   className="border rounded px-3 py-2 w-full"
-                  maxLength={4}
-                />
+                >
+                  <option value="">Keep current language</option>
+                  {languagesQuery.data &&
+                    languagesQuery.data.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.name} ({lang.code})
+                      </option>
+                    ))}
+                </select>
+                {languagesQuery.isPending && (
+                  <div className="text-xs text-gray-500 mt-1">
+                    Loading languages...
+                  </div>
+                )}
               </div>
 
               <div>

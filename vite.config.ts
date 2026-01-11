@@ -12,6 +12,10 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+  base: "/",
+  build: {
+    emptyOutDir: true,
+  },
   server: {
     proxy: {
       "/api": "http://localhost:3000",

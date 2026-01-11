@@ -20,32 +20,6 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AppProvider>
         <BrowserRouter>
-          <nav className="p-4 bg-gray-200">
-            <Link className="mr-4" to="/">
-              Home
-            </Link>
-            <Link to="/ikamah" className="mr-4">
-              Ikamah
-            </Link>
-            <Link to="/language" className="mr-4">
-              Language
-            </Link>
-            <Link to="/prayer" className="mr-4">
-              Prayer
-            </Link>
-            <Link to="/notice" className="mr-4">
-              Notice
-            </Link>
-            <Link to="/ramadan" className="mr-4">
-              Ramadan
-            </Link>
-            <Link to="/settings" className="mr-4">
-              Settings
-            </Link>
-            <Link to="/translations" className="mr-4">
-              Translations
-            </Link>
-          </nav>
           <AppRoutes />
         </BrowserRouter>
       </AppProvider>
