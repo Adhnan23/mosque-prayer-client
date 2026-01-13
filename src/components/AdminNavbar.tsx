@@ -7,12 +7,6 @@ const AdminNavbar = () => {
 
   const navItems = [
     {
-      path: "/",
-      label: "Home",
-      icon: "🏠",
-      gradient: "from-violet-500 to-purple-600",
-    },
-    {
       path: "/prayer",
       label: "Prayer",
       icon: "🕌",
@@ -20,7 +14,7 @@ const AdminNavbar = () => {
     },
     {
       path: "/ikamah",
-      label: "Ikamah",
+      label: "Iqamath",
       icon: "⏰",
       gradient: "from-green-500 to-emerald-600",
     },
@@ -53,6 +47,12 @@ const AdminNavbar = () => {
       label: "Translations",
       icon: "🗣️",
       gradient: "from-pink-500 to-rose-600",
+    },
+    {
+      path: "/display",
+      label: "Display",
+      icon: "📺",
+      gradient: "from-teal-500 to-cyan-600",
     },
   ];
 

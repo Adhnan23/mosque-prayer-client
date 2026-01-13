@@ -148,7 +148,7 @@ const PrayerDisplayTV = () => {
       {
         id: isFriday ? "jummah" : "dhuhr",
         time: isFriday ? ikamah.jummah : today.dhuhr,
-        iq: ikamah.dhuhr,
+        iq: isFriday ? ikamah.jummah : today.dhuhr,
       },
       { id: "asr", time: today.asr, iq: ikamah.asr },
       { id: "maghrib", time: today.maghrib, iq: ikamah.maghrib },

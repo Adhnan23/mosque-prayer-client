@@ -148,11 +148,11 @@ const IkamahTestPage = () => {
           <div className="inline-block bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-6 py-3 rounded-full shadow-lg mb-4">
             <h1 className="text-4xl font-black flex items-center gap-3">
               <span className="text-5xl">⏱️</span>
-              Ikamah Times Management
+              Iqamath Times Management
             </h1>
           </div>
           <p className="text-gray-600 text-lg">
-            Configure waiting periods between Adhan and Ikamah
+            Configure waiting periods between Adhan and Iqamath
           </p>
         </div>
 
@@ -239,7 +239,7 @@ const IkamahTestPage = () => {
             {!timeQuery.data && !timeQuery.isPending && !timeQuery.error && (
               <div className="text-gray-400 text-center py-12 bg-gray-50 rounded-xl">
                 <span className="text-5xl block mb-3">📭</span>
-                <p className="text-sm">No ikamah times available</p>
+                <p className="text-sm">No iqamath times available</p>
               </div>
             )}
             {timeQuery.data && (
@@ -334,7 +334,7 @@ const IkamahTestPage = () => {
                 <p className="font-bold text-yellow-900 mb-1">How It Works</p>
                 <p className="text-sm text-yellow-800">
                   Enter the number of minutes to wait after adhan before calling
-                  ikamah. For example, if ikamah is 15 minutes after adhan,
+                  iqamath. For example, if iqamath is 15 minutes after adhan,
                   enter 15.
                 </p>
               </div>
@@ -354,7 +354,7 @@ const IkamahTestPage = () => {
             ) : (
               <span className="flex items-center justify-center gap-2">
                 <span className="text-2xl">💾</span>
-                Update Ikamah Times
+                Update Iqamath Times
               </span>
             )}
           </button>
@@ -366,7 +366,7 @@ const IkamahTestPage = () => {
           )}
           {updateMutation.isSuccess && (
             <div className="mt-6">
-              <SuccessMessage message="Ikamah times updated successfully!" />
+              <SuccessMessage message="Iqamath times updated successfully!" />
             </div>
           )}
         </div>
@@ -375,7 +375,7 @@ const IkamahTestPage = () => {
         <div className="mt-6 bg-gradient-to-r from-teal-100 via-cyan-100 to-blue-100 border-2 border-teal-300 rounded-2xl p-6 shadow-lg">
           <h3 className="font-black text-teal-900 mb-4 text-xl flex items-center gap-2">
             <span className="text-2xl">📖</span>
-            Understanding Ikamah
+            Understanding Iqamath
           </h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="bg-white/70 backdrop-blur-sm p-4 rounded-xl">
@@ -385,7 +385,7 @@ const IkamahTestPage = () => {
               </p>
               <p className="text-sm text-teal-800">
                 Shows the number of minutes to wait after each adhan before
-                calling ikamah
+                calling iqamath
               </p>
             </div>
             <div className="bg-white/70 backdrop-blur-sm p-4 rounded-xl">
@@ -394,7 +394,7 @@ const IkamahTestPage = () => {
                 Calculated Times
               </p>
               <p className="text-sm text-teal-800">
-                Shows the actual ikamah times (adhan time + waiting minutes)
+                Shows the actual iqamath times (adhan time + waiting minutes)
               </p>
             </div>
             <div className="bg-white/70 backdrop-blur-sm p-4 rounded-xl">
@@ -403,7 +403,7 @@ const IkamahTestPage = () => {
                 Jummah
               </p>
               <p className="text-sm text-teal-800">
-                Special ikamah time for Friday congregational prayer
+                Special iqamath time for Friday congregational prayer
               </p>
             </div>
             <div className="bg-white/70 backdrop-blur-sm p-4 rounded-xl">

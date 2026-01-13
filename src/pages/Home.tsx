@@ -75,8 +75,8 @@ const AdminDashboard = () => {
       link: "/prayer",
     },
     {
-      title: "Ikamah Settings",
-      description: "Configure ikamah times after adhan",
+      title: "Iqamath Settings",
+      description: "Configure iqamath times after adhan",
       icon: "⏰",
       gradient: "from-green-100 to-emerald-100",
       borderColor: "border-green-300",

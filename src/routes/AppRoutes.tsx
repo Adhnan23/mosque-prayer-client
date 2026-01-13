@@ -9,6 +9,7 @@ import SettingsTestPage from "../pages/Settings";
 import TranslationsTestPage from "../pages/Translations";
 import MainLayout from "../layouts";
 import PrayerDisplayTV from "../pages/Display";
+import NotFoundPage from "../pages/NotFound";
 
 export default function AppRoutes() {
   return (
@@ -24,6 +25,7 @@ export default function AppRoutes() {
         <Route path="/translations" element={<TranslationsTestPage />} />
       </Route>
       <Route path="/display" element={<PrayerDisplayTV />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
