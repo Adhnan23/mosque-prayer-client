@@ -271,7 +271,7 @@ const PrayerDisplayTV = () => {
             className="text-[7.5vh] font-black uppercase leading-none"
             style={{ color: primaryColor }}
           >
-            {settings.mosque_name}
+            {t("mosque", "name") ? t("mosque", "name") : settings.mosque_name}
           </h1>
           <div
             className="text-[3.2vh] font-bold mt-[0.8vh] flex items-center gap-3"
