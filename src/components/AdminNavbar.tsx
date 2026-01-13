@@ -6,14 +6,54 @@ const AdminNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { path: "/", label: "Home", icon: "🏠" },
-    { path: "/prayer", label: "Prayer", icon: "🕌" },
-    { path: "/ikamah", label: "Ikamah", icon: "⏰" },
-    { path: "/ramadan", label: "Ramadan", icon: "🌙" },
-    { path: "/languages", label: "Languages", icon: "🌐" },
-    { path: "/notice", label: "Notice", icon: "📢" },
-    { path: "/settings", label: "Settings", icon: "⚙️" },
-    { path: "/translations", label: "Translations", icon: "🗣️" },
+    {
+      path: "/",
+      label: "Home",
+      icon: "🏠",
+      gradient: "from-violet-500 to-purple-600",
+    },
+    {
+      path: "/prayer",
+      label: "Prayer",
+      icon: "🕌",
+      gradient: "from-blue-500 to-cyan-600",
+    },
+    {
+      path: "/ikamah",
+      label: "Ikamah",
+      icon: "⏰",
+      gradient: "from-green-500 to-emerald-600",
+    },
+    {
+      path: "/ramadan",
+      label: "Ramadan",
+      icon: "🌙",
+      gradient: "from-purple-500 to-violet-600",
+    },
+    {
+      path: "/languages",
+      label: "Languages",
+      icon: "🌐",
+      gradient: "from-indigo-500 to-blue-600",
+    },
+    {
+      path: "/notice",
+      label: "Notice",
+      icon: "📢",
+      gradient: "from-yellow-500 to-amber-600",
+    },
+    {
+      path: "/settings",
+      label: "Settings",
+      icon: "⚙️",
+      gradient: "from-gray-500 to-slate-600",
+    },
+    {
+      path: "/translations",
+      label: "Translations",
+      icon: "🗣️",
+      gradient: "from-pink-500 to-rose-600",
+    },
   ];
 
   const isActive = (path: string) => {
@@ -24,32 +64,33 @@ const AdminNavbar = () => {
   };
 
   return (
-    <nav className="bg-linear-to-r from-blue-600 to-indigo-700 shadow-lg sticky top-0 z-50">
+    <nav className="bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 shadow-2xl sticky top-0 z-50 border-b-4 border-white/20">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2 text-white font-bold text-xl"
+            className="flex items-center text-white font-black text-2xl hover:scale-105 transition-transform flex-shrink-0"
           >
-            <span className="text-2xl">🕌</span>
-            <span className="hidden sm:inline">Mosque Admin</span>
+            <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl">
+              <span className="text-4xl">🕌</span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-2">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition-all transform ${
                   isActive(item.path)
-                    ? "bg-white text-blue-600 shadow-md"
-                    : "text-white hover:bg-white/10"
+                    ? `bg-white text-gray-900 shadow-xl scale-105`
+                    : "text-white hover:bg-white/20 hover:scale-105 backdrop-blur-sm"
                 }`}
               >
-                <span className="text-lg">{item.icon}</span>
-                <span className="font-medium">{item.label}</span>
+                <span className="text-xl">{item.icon}</span>
+                <span>{item.label}</span>
               </Link>
             ))}
           </div>
@@ -57,33 +98,33 @@ const AdminNavbar = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition"
+            className="md:hidden text-white p-3 hover:bg-white/20 rounded-xl transition-all backdrop-blur-sm font-black"
           >
             {isMobileMenuOpen ? (
               <svg
-                className="w-6 h-6"
+                className="w-7 h-7"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                strokeWidth={3}
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
             ) : (
               <svg
-                className="w-6 h-6"
+                className="w-7 h-7"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                strokeWidth={3}
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
                   d="M4 6h16M4 12h16M4 18h16"
                 />
               </svg>
@@ -93,27 +134,46 @@ const AdminNavbar = () => {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden pb-4">
-            <div className="flex flex-col gap-2">
+          <div className="md:hidden pb-4 animate-fadeIn">
+            <div className="flex flex-col gap-2 bg-white/10 backdrop-blur-md p-3 rounded-2xl border-2 border-white/20">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                  className={`flex items-center gap-3 px-5 py-4 rounded-xl font-bold transition-all transform ${
                     isActive(item.path)
-                      ? "bg-white text-blue-600 shadow-md"
-                      : "text-white hover:bg-white/10"
+                      ? `bg-gradient-to-r ${item.gradient} text-white shadow-xl scale-105`
+                      : "text-white hover:bg-white/20 hover:scale-102"
                   }`}
                 >
-                  <span className="text-xl">{item.icon}</span>
-                  <span className="font-medium">{item.label}</span>
+                  <span className="text-2xl">{item.icon}</span>
+                  <span className="text-lg">{item.label}</span>
                 </Link>
               ))}
             </div>
           </div>
         )}
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+        .hover\\:scale-102:hover {
+          transform: scale(1.02);
+        }
+      `}</style>
     </nav>
   );
 };

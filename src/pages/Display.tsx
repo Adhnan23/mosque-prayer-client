@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import moment from "moment-hijri";
 import {
@@ -9,18 +8,23 @@ import {
   useTranslations,
   useRamadan,
 } from "../hooks";
+import type { TimeFormat, LanguageCode } from "../api/types";
+
+interface TimelineItem {
+  id: string;
+  time: string | undefined;
+  iq: string | null | undefined;
+}
 
 const PrayerDisplayTV = () => {
-  const { data: settings } = useSettings.get();
-  const { data: today } = usePrayerTimes.today(
-    (settings?.time_format as any) || 24
-  );
-  const { data: ikamah } = useIkamah.time((settings?.time_format as any) || 24);
+  const { data: settings } = useSettings.get(20000);
+  const timeFormat = (settings?.time_format as TimeFormat) || 24;
+
+  const { data: today } = usePrayerTimes.today(timeFormat);
+  const { data: ikamah } = useIkamah.time(timeFormat);
   const { data: notices } = useNotice.get(true);
   const { data: allTranslations } = useTranslations.get();
-  const { data: ramadan } = useRamadan.get(
-    (settings?.time_format as any) || 24
-  );
+  const { data: ramadan } = useRamadan.get(timeFormat);
 
   const [now, setNow] = useState(moment());
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -31,7 +35,7 @@ const PrayerDisplayTV = () => {
   }, []);
 
   // Static Language Mappings
-  const langData = {
+  const langData: Record<LanguageCode, { days: string[]; months: string[] }> = {
     en: {
       days: [
         "Sunday",
@@ -109,11 +113,11 @@ const PrayerDisplayTV = () => {
     },
   };
 
-  const currentLang = (settings?.language_code as "en" | "ta" | "si") || "en";
-  const displayDay = langData[currentLang].days[now.day()];
-  const displayMonth = langData[currentLang].months[now.month()];
+  const currentLang = (settings?.language_code as LanguageCode) || "en";
+  const displayDay = langData[currentLang]?.days[now.day()] || "";
+  const displayMonth = langData[currentLang]?.months[now.month()] || "";
 
-  const t = (cat: string, key: string) => {
+  const t = (cat: string, key: string): string => {
     return (
       allTranslations?.find(
         (i) =>
@@ -136,9 +140,9 @@ const PrayerDisplayTV = () => {
   };
 
   const isFriday = now.day() === 5;
-  const timeline = useMemo(() => {
+  const timeline = useMemo<TimelineItem[]>(() => {
     if (!today || !ikamah) return [];
-    const list = [
+    const list: TimelineItem[] = [
       { id: "fajr", time: today.fajr, iq: ikamah.fajr },
       { id: "sunrise", time: today.sunrise, iq: null },
       {
@@ -179,8 +183,9 @@ const PrayerDisplayTV = () => {
     if (
       nextIdx === 0 &&
       now.isAfter(parseToToday(timeline[timeline.length - 1].time))
-    )
+    ) {
       target?.add(1, "day");
+    }
 
     const diff = moment.duration(target?.diff(now));
     const pad = (n: number) => Math.floor(n).toString().padStart(2, "0");
@@ -200,7 +205,7 @@ const PrayerDisplayTV = () => {
     if (!el) return;
     let direction = 1;
 
-    let scrollInterval: any;
+    let scrollInterval: NodeJS.Timeout | null = null;
 
     const runScroll = () => {
       if (el.scrollHeight <= el.clientHeight) return;
@@ -209,14 +214,14 @@ const PrayerDisplayTV = () => {
           el.scrollTop += 3;
           if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
             direction = -1;
-            clearInterval(scrollInterval);
+            if (scrollInterval) clearInterval(scrollInterval);
             setTimeout(runScroll, 1200);
           }
         } else {
           el.scrollTop -= 3;
           if (el.scrollTop <= 0) {
             direction = 1;
-            clearInterval(scrollInterval);
+            if (scrollInterval) clearInterval(scrollInterval);
             setTimeout(runScroll, 1200);
           }
         }
@@ -224,7 +229,9 @@ const PrayerDisplayTV = () => {
     };
 
     runScroll();
-    return () => clearInterval(scrollInterval);
+    return () => {
+      if (scrollInterval) clearInterval(scrollInterval);
+    };
   }, [timeline]);
 
   const activeNotices = useMemo(() => {
@@ -239,21 +246,43 @@ const PrayerDisplayTV = () => {
 
   const hijriDate = moment().add(settings.hijri_offset || 0, "days");
 
+  // Use colors from settings
+  const primaryColor = settings.primary_color || "#8b5cf6";
+  const secondaryColor = settings.secondary_color || "#06b6d4";
+  const accentColor = settings.accent_color || "#10b981";
+  const backgroundColor = settings.background_color || "#000000";
+  const foregroundColor = settings.foreground_color || "#ffffff";
+
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden bg-black text-white p-[1.5vh] font-sans select-none">
+    <div
+      className="h-screen w-screen flex flex-col overflow-hidden p-[1.5vh] font-sans select-none"
+      style={{
+        backgroundColor,
+        color: foregroundColor,
+      }}
+    >
       {/* HEADER */}
-      <div className="h-[15vh] flex justify-between items-center px-[2vw] border-b-[0.5vh] border-cyan-400">
+      <div
+        className="h-[15vh] flex justify-between items-center px-[2vw] border-b-[0.8vh] rounded-[2vh] shadow-2xl"
+        style={{ borderColor: primaryColor }}
+      >
         <div>
-          <h1 className="text-[7.5vh] font-black uppercase text-cyan-400 leading-none">
+          <h1
+            className="text-[7.5vh] font-black uppercase leading-none"
+            style={{ color: primaryColor }}
+          >
             {settings.mosque_name}
           </h1>
-          <div className="text-[3.2vh] font-bold text-green-500 mt-[0.8vh] flex items-center gap-3">
+          <div
+            className="text-[3.2vh] font-bold mt-[0.8vh] flex items-center gap-3"
+            style={{ color: accentColor }}
+          >
             <span className="uppercase">{displayDay}</span>
-            <span className="text-white/20">|</span>
+            <span style={{ color: `${foregroundColor}33` }}>|</span>
             <span>
               {now.date()} {displayMonth} {now.year()}
             </span>
-            <span className="text-white/20">|</span>
+            <span style={{ color: `${foregroundColor}33` }}>|</span>
             <span>
               {hijriDate.iDate()}{" "}
               {t("hijri", (hijriDate.iMonth() + 1).toString())}{" "}
@@ -262,9 +291,15 @@ const PrayerDisplayTV = () => {
           </div>
         </div>
         <div className="text-right">
-          <div className="text-[12vh] font-black text-green-500 leading-none tabular-nums flex items-baseline">
+          <div
+            className="text-[12vh] font-black leading-none tabular-nums flex items-baseline"
+            style={{ color: accentColor }}
+          >
             {now.format(settings.time_format === 12 ? "hh:mm" : "HH:mm")}
-            <span className="text-[4vh] ml-[0.8vw] text-green-400 uppercase">
+            <span
+              className="text-[4vh] ml-[0.8vw] uppercase"
+              style={{ color: secondaryColor }}
+            >
               {settings.time_format === 12 ? now.format("A") : ""}
             </span>
           </div>
@@ -273,32 +308,68 @@ const PrayerDisplayTV = () => {
 
       {/* MAIN CONTENT */}
       <div className="flex-1 flex gap-[1.5vw] mt-[2.5vh] px-[1vw] min-h-0">
-        <div className="flex-[1.6] flex flex-col justify-center border-[0.6vh] border-cyan-500 rounded-[4vh] p-[4vh] bg-black">
-          <p className="text-[4.5vh] font-bold text-green-500 uppercase mb-[1vh]">
+        <div
+          className="flex-[1.6] flex flex-col justify-center border-[0.8vh] rounded-[4vh] p-[4vh] shadow-2xl"
+          style={{
+            borderColor: primaryColor,
+            backgroundColor: `${backgroundColor}dd`,
+          }}
+        >
+          <p
+            className="text-[4.5vh] font-bold uppercase mb-[1vh]"
+            style={{ color: accentColor }}
+          >
             {t("ui", "next_prayer")}
           </p>
-          <h2 className="text-[13vh] font-black text-white leading-tight mb-[4vh] uppercase">
+          <h2
+            className="text-[13vh] font-black leading-tight mb-[4vh] uppercase"
+            style={{ color: foregroundColor }}
+          >
             {t("prayer_names", timeline[active.nextIdx].id) !==
             timeline[active.nextIdx].id
               ? t("prayer_names", timeline[active.nextIdx].id)
               : t("ramadan", timeline[active.nextIdx].id)}
           </h2>
           <div className="flex gap-[2vw]">
-            <div className="flex-1 bg-white/5 p-[3.5vh] rounded-[3vh] border-l-[1.2vh] border-green-600">
-              <p className="text-[3.2vh] font-bold text-green-600 uppercase mb-[0.5vh] whitespace-nowrap">
+            <div
+              className="flex-1 p-[3.5vh] rounded-[3vh] border-l-[1.2vh] shadow-xl"
+              style={{
+                backgroundColor: `${foregroundColor}0d`,
+                borderColor: accentColor,
+              }}
+            >
+              <p
+                className="text-[3.2vh] font-bold uppercase mb-[0.5vh] whitespace-nowrap"
+                style={{ color: accentColor }}
+              >
                 {t("ui", "begins")}
               </p>
-              <p className="text-[9.5vh] font-black text-green-400 leading-none whitespace-nowrap">
+              <p
+                className="text-[9.5vh] font-black leading-none whitespace-nowrap"
+                style={{ color: secondaryColor }}
+              >
                 {timeline[active.nextIdx].time}
               </p>
             </div>
-            <div className="flex-1 bg-white/5 p-[3.5vh] rounded-[3vh] border-l-[1.2vh] border-orange-600">
-              <p className="text-[3.2vh] font-bold text-orange-600 uppercase mb-[0.5vh] whitespace-nowrap">
+            <div
+              className="flex-1 p-[3.5vh] rounded-[3vh] border-l-[1.2vh] shadow-xl"
+              style={{
+                backgroundColor: `${foregroundColor}0d`,
+                borderColor: primaryColor,
+              }}
+            >
+              <p
+                className="text-[3.2vh] font-bold uppercase mb-[0.5vh] whitespace-nowrap"
+                style={{ color: primaryColor }}
+              >
                 {settings.language_code === "ta"
                   ? "மீதம்"
                   : t("ui", "preparation")}
               </p>
-              <p className="text-[9.5vh] font-black text-orange-500 tabular-nums leading-none">
+              <p
+                className="text-[9.5vh] font-black tabular-nums leading-none"
+                style={{ color: accentColor }}
+              >
                 {active.countdown}
               </p>
             </div>
@@ -314,41 +385,56 @@ const PrayerDisplayTV = () => {
             return (
               <div
                 key={p.id}
-                className={`flex justify-between items-center px-[2vw] py-[2.2vh] rounded-[2.5vh] border-[0.2vh] shrink-0 ${
-                  isCurrent
-                    ? "bg-white text-black scale-[1.01] z-10"
-                    : "bg-black border-white/10 opacity-60"
+                className={`flex justify-between items-center px-[2vw] py-[2.2vh] rounded-[2.5vh] border-[0.3vh] shrink-0 shadow-lg transition-all ${
+                  isCurrent ? "scale-[1.03] z-10" : "opacity-70"
                 }`}
+                style={{
+                  backgroundColor: isCurrent
+                    ? foregroundColor
+                    : `${foregroundColor}0a`,
+                  borderColor: isCurrent
+                    ? primaryColor
+                    : `${foregroundColor}1a`,
+                  color: isCurrent ? backgroundColor : foregroundColor,
+                }}
               >
                 <div className="flex flex-col">
                   <span
-                    className={`text-[4.2vh] font-black uppercase leading-none ${
-                      isCurrent ? "text-black" : "text-green-600"
-                    }`}
+                    className={`text-[4.2vh] font-black uppercase leading-none`}
+                    style={{
+                      color: isCurrent ? backgroundColor : accentColor,
+                    }}
                   >
                     {t("prayer_names", p.id) !== p.id
                       ? t("prayer_names", p.id)
                       : t("ramadan", p.id)}
                   </span>
                   {isCurrent && (
-                    <p className="text-[2vh] font-bold uppercase mt-1">
+                    <p
+                      className="text-[2vh] font-bold uppercase mt-1"
+                      style={{ color: primaryColor }}
+                    >
                       {t("ui", "now")}
                     </p>
                   )}
                 </div>
                 <div className="text-right flex flex-col items-end">
                   <p
-                    className={`text-[4.8vh] font-black tabular-nums leading-none ${
-                      isCurrent ? "text-black" : "text-green-500"
-                    }`}
+                    className={`text-[4.8vh] font-black tabular-nums leading-none`}
+                    style={{
+                      color: isCurrent ? backgroundColor : secondaryColor,
+                    }}
                   >
                     {p.time}
                   </p>
                   {p.iq && (
                     <p
-                      className={`text-[2.2vh] font-bold mt-[0.5vh] whitespace-nowrap ${
-                        isCurrent ? "text-gray-700" : "text-gray-400"
-                      }`}
+                      className={`text-[2.2vh] font-bold mt-[0.5vh] whitespace-nowrap`}
+                      style={{
+                        color: isCurrent
+                          ? `${backgroundColor}aa`
+                          : `${foregroundColor}66`,
+                      }}
                     >
                       {t("ui", "iqamah")}: {p.iq}
                     </p>
@@ -360,20 +446,38 @@ const PrayerDisplayTV = () => {
         </div>
       </div>
 
-      {/* FOOTER NOTICE: Duplicated content for infinite loop, with bullet separator */}
+      {/* FOOTER NOTICE */}
       {activeNotices.length > 0 && (
-        <div className="h-[10vh] mt-[2.5vh] flex items-center bg-black border-t-[0.3vh] border-white/10 px-[2vw] overflow-hidden">
-          <div className="bg-red-600 text-white px-[1.5vw] py-[0.5vh] rounded-[1vh] text-[3.2vh] font-black mr-[3vw] z-10 whitespace-nowrap shadow-lg">
+        <div
+          className="h-[10vh] mt-[2.5vh] flex items-center border-t-[0.5vh] rounded-[2vh] px-[2vw] overflow-hidden shadow-2xl"
+          style={{
+            backgroundColor: `${backgroundColor}dd`,
+            borderColor: `${foregroundColor}1a`,
+          }}
+        >
+          <div
+            className="px-[1.5vw] py-[0.5vh] rounded-[1vh] text-[3.2vh] font-black mr-[3vw] z-10 whitespace-nowrap shadow-lg"
+            style={{
+              backgroundColor: accentColor,
+              color: backgroundColor,
+            }}
+          >
             {t("admin", "notices").toUpperCase()}
           </div>
           <div className="flex-1 overflow-hidden relative">
-            <div className="whitespace-nowrap text-[4.5vh] font-bold text-green-500 animate-marquee inline-flex items-center">
-              {/* Render notices twice for seamless looping */}
+            <div
+              className="whitespace-nowrap text-[4.5vh] font-bold animate-marquee inline-flex items-center"
+              style={{ color: secondaryColor }}
+            >
               {[...activeNotices, ...activeNotices].map((n, i) => (
                 <React.Fragment key={`${n.id}-${i}`}>
                   <span>{n.content}</span>
-                  {/* Large gap and bullet icon separator */}
-                  <span className="mx-[10vw] text-cyan-400 text-[6vh]">•</span>
+                  <span
+                    className="mx-[10vw] text-[6vh]"
+                    style={{ color: primaryColor }}
+                  >
+                    •
+                  </span>
                 </React.Fragment>
               ))}
             </div>

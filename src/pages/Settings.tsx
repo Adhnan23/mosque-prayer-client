@@ -19,30 +19,41 @@ const SettingsTestPage = () => {
   });
 
   const Loading = () => (
-    <div className="text-blue-500 font-semibold animate-pulse">Loading...</div>
+    <div className="text-violet-600 font-semibold animate-pulse flex items-center justify-center gap-2 py-8">
+      <div className="w-5 h-5 border-3 border-violet-600 border-t-transparent rounded-full animate-spin"></div>
+      Loading...
+    </div>
   );
 
   const ErrorMessage = ({ message }: { message: string }) => (
-    <div className="text-red-500 font-semibold bg-red-50 p-3 rounded">
-      Error: {message}
+    <div className="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 p-4 rounded-xl shadow-md">
+      <div className="flex items-center gap-2">
+        <span className="text-2xl">⚠️</span>
+        <div>
+          <p className="font-bold text-red-800">Error</p>
+          <p className="text-red-600 text-sm">{message}</p>
+        </div>
+      </div>
     </div>
   );
 
   const SuccessMessage = ({ message }: { message: string }) => (
-    <div className="text-green-700 font-semibold bg-green-50 p-3 rounded">
-      {message}
+    <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-4 rounded-xl shadow-md">
+      <div className="flex items-center gap-2">
+        <span className="text-2xl">✅</span>
+        <div>
+          <p className="font-bold text-green-800">Success</p>
+          <p className="text-green-600 text-sm">{message}</p>
+        </div>
+      </div>
     </div>
   );
 
-  // Queries
   const getQuery = useSettings.get();
   const getByColumnQuery = useSettings.getByColumn(searchColumn);
-  const languagesQuery = useLanguages.get(); // Fetch all languages
-
-  // Mutation
+  const languagesQuery = useLanguages.get();
   const updateMutation = useSettings.update();
 
-  // Prefill form with current data
   useEffect(() => {
     if (getQuery.data && !getQuery.isPending) {
       setUpdateData({
@@ -104,67 +115,89 @@ const SettingsTestPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-          ⚙️ Settings Management Test Page
-        </h1>
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-block bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg mb-4">
+            <h1 className="text-4xl font-black flex items-center gap-3">
+              <span className="text-5xl">⚙️</span>
+              Settings Management
+            </h1>
+          </div>
+          <p className="text-gray-600 text-lg">
+            Configure application settings and preferences
+          </p>
+        </div>
 
         {/* Query Section */}
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           {/* All Settings */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4 border-b pb-2">
-              All Settings
+          <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-violet-100">
+            <h2 className="text-2xl font-black mb-6 pb-3 border-b-2 border-gray-200 flex items-center gap-3">
+              <span className="text-3xl">📋</span>
+              Current Settings
             </h2>
             {getQuery.isPending && <Loading />}
             {getQuery.error && (
               <ErrorMessage message={getQuery.error.message} />
             )}
             {!getQuery.data && !getQuery.isPending && !getQuery.error && (
-              <div className="text-gray-400 text-center py-8">
-                No settings found
+              <div className="text-center py-12 bg-gray-50 rounded-xl">
+                <span className="text-5xl block mb-3">📭</span>
+                <p className="text-gray-400">No settings found</p>
               </div>
             )}
             {getQuery.data && (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {/* General Settings */}
-                <div className="bg-blue-50 p-3 rounded">
-                  <h3 className="font-semibold text-blue-900 mb-2">
-                    📋 General
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-5 rounded-xl border-2 border-blue-200">
+                  <h3 className="font-black text-blue-900 mb-3 flex items-center gap-2 text-lg">
+                    <span className="text-2xl">🏢</span>
+                    General
                   </h3>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Mosque Name:</span>
-                      <span className="font-medium">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between items-center bg-white/60 backdrop-blur-sm p-2 rounded-lg">
+                      <span className="text-gray-700 font-semibold">
+                        Mosque Name:
+                      </span>
+                      <span className="font-bold text-blue-900">
                         {getQuery.data.mosque_name}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Language:</span>
-                      <span className="font-mono font-medium">
+                    <div className="flex justify-between items-center bg-white/60 backdrop-blur-sm p-2 rounded-lg">
+                      <span className="text-gray-700 font-semibold">
+                        Language:
+                      </span>
+                      <span className="font-mono font-bold text-blue-900">
                         {getQuery.data.language_code}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Time Format:</span>
-                      <span className="font-medium">
+                    <div className="flex justify-between items-center bg-white/60 backdrop-blur-sm p-2 rounded-lg">
+                      <span className="text-gray-700 font-semibold">
+                        Time Format:
+                      </span>
+                      <span className="font-bold text-blue-900">
                         {getQuery.data.time_format}h
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Hijri Offset:</span>
-                      <span className="font-medium">
+                    <div className="flex justify-between items-center bg-white/60 backdrop-blur-sm p-2 rounded-lg">
+                      <span className="text-gray-700 font-semibold">
+                        Hijri Offset:
+                      </span>
+                      <span className="font-bold text-blue-900">
                         {getQuery.data.hijri_offset}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Ramadan Mode:</span>
+                    <div className="flex justify-between items-center bg-white/60 backdrop-blur-sm p-2 rounded-lg">
+                      <span className="text-gray-700 font-semibold">
+                        Ramadan Mode:
+                      </span>
                       <span
-                        className={`px-2 py-0.5 rounded text-xs ${
+                        className={`px-3 py-1 rounded-full text-xs font-bold ${
                           getQuery.data.is_ramadan
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-700"
+                            ? "bg-green-600 text-white"
+                            : "bg-gray-600 text-white"
                         }`}
                       >
                         {getQuery.data.is_ramadan ? "🌙 Active" : "Inactive"}
@@ -174,11 +207,12 @@ const SettingsTestPage = () => {
                 </div>
 
                 {/* Color Settings */}
-                <div className="bg-purple-50 p-3 rounded">
-                  <h3 className="font-semibold text-purple-900 mb-2">
-                    🎨 Colors
+                <div className="bg-gradient-to-r from-purple-50 to-fuchsia-50 p-5 rounded-xl border-2 border-purple-200">
+                  <h3 className="font-black text-purple-900 mb-3 flex items-center gap-2 text-lg">
+                    <span className="text-2xl">🎨</span>
+                    Theme Colors
                   </h3>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {[
                       { label: "Primary", value: getQuery.data.primary_color },
                       {
@@ -197,15 +231,19 @@ const SettingsTestPage = () => {
                     ].map(({ label, value }) => (
                       <div
                         key={label}
-                        className="flex items-center justify-between text-sm"
+                        className="flex items-center justify-between bg-white/60 backdrop-blur-sm p-3 rounded-lg"
                       >
-                        <span className="text-gray-600">{label}:</span>
-                        <div className="flex items-center gap-2">
+                        <span className="text-gray-700 font-semibold">
+                          {label}:
+                        </span>
+                        <div className="flex items-center gap-3">
                           <div
-                            className="w-8 h-8 rounded border-2 border-gray-300"
+                            className="w-10 h-10 rounded-lg border-3 border-white shadow-md"
                             style={{ backgroundColor: value }}
                           />
-                          <span className="font-mono text-xs">{value}</span>
+                          <span className="font-mono text-xs font-bold text-purple-900">
+                            {value}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -216,12 +254,13 @@ const SettingsTestPage = () => {
           </div>
 
           {/* Get by Column */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4 border-b pb-2">
+          <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-purple-100">
+            <h2 className="text-2xl font-black mb-6 pb-3 border-b-2 border-gray-200 flex items-center gap-3">
+              <span className="text-3xl">🔍</span>
               Search by Column
             </h2>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
+            <div className="mb-6">
+              <label className="block text-sm font-bold mb-2 text-gray-700">
                 Select Setting
               </label>
               <select
@@ -229,7 +268,7 @@ const SettingsTestPage = () => {
                 onChange={(e) =>
                   setSearchColumn(e.target.value as TSettingsColumn)
                 }
-                className="border rounded px-3 py-2 w-full"
+                className="border-2 border-purple-300 rounded-xl px-4 py-3 w-full font-semibold focus:ring-4 focus:ring-purple-200 focus:border-purple-500 focus:outline-none transition-all"
               >
                 {columns.map(({ value, label }) => (
                   <option key={value} value={value}>
@@ -245,19 +284,19 @@ const SettingsTestPage = () => {
             )}
             {getByColumnQuery.data !== undefined &&
               getByColumnQuery.data !== null && (
-                <div className="bg-green-50 p-4 rounded border border-green-200">
-                  <div className="text-sm text-gray-600 mb-2">
+                <div className="bg-gradient-to-br from-green-100 to-emerald-100 p-6 rounded-xl border-4 border-green-300 shadow-lg">
+                  <div className="text-sm text-green-700 mb-2 font-semibold">
                     {columns.find((c) => c.value === searchColumn)?.label}:
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     {searchColumn.includes("color") &&
                       typeof getByColumnQuery.data === "string" && (
                         <div
-                          className="w-12 h-12 rounded border-2 border-gray-300"
+                          className="w-16 h-16 rounded-xl border-4 border-white shadow-lg"
                           style={{ backgroundColor: getByColumnQuery.data }}
                         />
                       )}
-                    <div className="text-2xl font-bold text-green-700">
+                    <div className="text-3xl font-black text-green-700">
                       {typeof getByColumnQuery.data === "boolean"
                         ? getByColumnQuery.data
                           ? "✓ Yes"
@@ -271,26 +310,30 @@ const SettingsTestPage = () => {
         </div>
 
         {/* Update Section */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <div className="flex justify-between items-center mb-4 border-b pb-2">
-            <h2 className="text-xl font-bold">Update Settings</h2>
+        <div className="bg-white p-8 rounded-2xl shadow-xl border-2 border-violet-100">
+          <div className="flex justify-between items-center mb-6 pb-4 border-b-2 border-gray-200">
+            <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3">
+              <span className="text-3xl">✏️</span>
+              Update Settings
+            </h2>
             <button
               onClick={handleReset}
-              className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded transition"
+              className="bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 px-5 py-2 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
-              Reset to Current
+              🔄 Reset
             </button>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* General Settings */}
             <div>
-              <h3 className="font-semibold text-gray-700 mb-3">
-                📋 General Settings
+              <h3 className="font-black text-gray-700 mb-4 flex items-center gap-2 text-xl">
+                <span className="text-2xl">🏢</span>
+                General Settings
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
+                  <label className="block text-sm font-bold mb-2 text-gray-800">
                     Mosque Name
                   </label>
                   <input
@@ -303,12 +346,12 @@ const SettingsTestPage = () => {
                       })
                     }
                     placeholder="Enter mosque name"
-                    className="border rounded px-3 py-2 w-full"
+                    className="border-2 border-blue-300 rounded-lg px-4 py-3 w-full font-semibold focus:ring-4 focus:ring-blue-200 focus:border-blue-500 focus:outline-none transition-all"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
+                  <label className="block text-sm font-bold mb-2 text-gray-800">
                     Language Code
                   </label>
                   <select
@@ -319,7 +362,7 @@ const SettingsTestPage = () => {
                         language_code: e.target.value || undefined,
                       })
                     }
-                    className="border rounded px-3 py-2 w-full"
+                    className="border-2 border-blue-300 rounded-lg px-4 py-3 w-full font-semibold focus:ring-4 focus:ring-blue-200 focus:border-blue-500 focus:outline-none transition-all"
                   >
                     <option value="">Select language</option>
                     {languagesQuery.data &&
@@ -330,19 +373,15 @@ const SettingsTestPage = () => {
                       ))}
                   </select>
                   {languagesQuery.isPending && (
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                      <div className="w-3 h-3 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
                       Loading languages...
-                    </div>
-                  )}
-                  {languagesQuery.error && (
-                    <div className="text-xs text-red-500 mt-1">
-                      Failed to load languages
                     </div>
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
+                  <label className="block text-sm font-bold mb-2 text-gray-800">
                     Time Format
                   </label>
                   <select
@@ -355,71 +394,103 @@ const SettingsTestPage = () => {
                           : undefined,
                       })
                     }
-                    className="border rounded px-3 py-2 w-full"
+                    className="border-2 border-blue-300 rounded-lg px-4 py-3 w-full font-semibold focus:ring-4 focus:ring-blue-200 focus:border-blue-500 focus:outline-none transition-all"
                   >
                     <option value="">Select format</option>
-                    <option value="12">12 Hour</option>
-                    <option value="24">24 Hour</option>
+                    <option value="12">🕐 12 Hour</option>
+                    <option value="24">🕛 24 Hour</option>
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Ramadan Mode
-                  </label>
-                  <div className="flex items-center gap-4 h-10">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={updateData.is_ramadan ?? false}
-                        onChange={(e) =>
-                          setUpdateData({
-                            ...updateData,
-                            is_ramadan: e.target.checked,
-                          })
-                        }
-                        className="w-4 h-4"
-                      />
-                      <span className="text-sm">🌙 Enable Ramadan Mode</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
+                  <label className="block text-sm font-bold mb-2 text-gray-800">
                     Hijri Offset
                   </label>
                   <input
                     type="number"
-                    value={updateData.hijri_offset || 0}
+                    value={updateData.hijri_offset ?? ""}
                     onChange={(e) =>
                       setUpdateData({
                         ...updateData,
-                        hijri_offset: Number(e.target.value) || undefined,
+                        hijri_offset:
+                          e.target.value === ""
+                            ? undefined
+                            : Number(e.target.value),
                       })
                     }
                     placeholder="Enter hijri offset"
-                    className="border rounded px-3 py-2 w-full"
+                    className="border-2 border-blue-300 rounded-lg px-4 py-3 w-full font-semibold focus:ring-4 focus:ring-blue-200 focus:border-blue-500 focus:outline-none transition-all"
                   />
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200 md:col-span-2">
+                  <label className="block text-sm font-bold mb-3 text-gray-800">
+                    Ramadan Mode
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer bg-white/60 backdrop-blur-sm p-3 rounded-lg">
+                    <input
+                      type="checkbox"
+                      checked={updateData.is_ramadan ?? false}
+                      onChange={(e) =>
+                        setUpdateData({
+                          ...updateData,
+                          is_ramadan: e.target.checked,
+                        })
+                      }
+                      className="w-5 h-5 rounded"
+                    />
+                    <span className="font-semibold">
+                      🌙 Enable Ramadan Mode
+                    </span>
+                  </label>
                 </div>
               </div>
             </div>
 
             {/* Color Settings */}
             <div>
-              <h3 className="font-semibold text-gray-700 mb-3">
-                🎨 Theme Colors
+              <h3 className="font-black text-gray-700 mb-4 flex items-center gap-2 text-xl">
+                <span className="text-2xl">🎨</span>
+                Theme Colors
               </h3>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[
-                  { key: "primary_color", label: "Primary Color" },
-                  { key: "secondary_color", label: "Secondary Color" },
-                  { key: "accent_color", label: "Accent Color" },
-                  { key: "background_color", label: "Background Color" },
-                  { key: "foreground_color", label: "Foreground Color" },
-                ].map(({ key, label }) => (
-                  <div key={key}>
-                    <label className="block text-sm font-medium mb-2">
+                  {
+                    key: "primary_color",
+                    label: "Primary Color",
+                    gradient: "from-violet-100 to-purple-100",
+                    border: "border-violet-300",
+                  },
+                  {
+                    key: "secondary_color",
+                    label: "Secondary Color",
+                    gradient: "from-blue-100 to-cyan-100",
+                    border: "border-blue-300",
+                  },
+                  {
+                    key: "accent_color",
+                    label: "Accent Color",
+                    gradient: "from-pink-100 to-rose-100",
+                    border: "border-pink-300",
+                  },
+                  {
+                    key: "background_color",
+                    label: "Background Color",
+                    gradient: "from-gray-100 to-slate-100",
+                    border: "border-gray-300",
+                  },
+                  {
+                    key: "foreground_color",
+                    label: "Foreground Color",
+                    gradient: "from-emerald-100 to-teal-100",
+                    border: "border-emerald-300",
+                  },
+                ].map(({ key, label, gradient, border }) => (
+                  <div
+                    key={key}
+                    className={`bg-gradient-to-r ${gradient} p-4 rounded-xl border-2 ${border}`}
+                  >
+                    <label className="block text-sm font-bold mb-3 text-gray-800">
                       {label}
                     </label>
                     <div className="flex gap-2">
@@ -436,7 +507,7 @@ const SettingsTestPage = () => {
                             [key]: e.target.value,
                           })
                         }
-                        className="w-14 h-10 rounded border cursor-pointer"
+                        className="w-16 h-12 rounded-lg border-2 border-gray-300 cursor-pointer shadow-md"
                       />
                       <input
                         type="text"
@@ -452,7 +523,7 @@ const SettingsTestPage = () => {
                           })
                         }
                         placeholder="#000000"
-                        className="border rounded px-3 py-2 flex-1 font-mono text-sm"
+                        className="border-2 border-gray-300 rounded-lg px-3 py-2 flex-1 font-mono text-sm font-bold focus:ring-4 focus:ring-purple-200 focus:border-purple-500 focus:outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -460,17 +531,35 @@ const SettingsTestPage = () => {
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-800">
-              ℹ️ <strong>Tip:</strong> Use the color picker or enter hex codes
-              manually. Leave fields empty to keep current values.
+            <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 p-4 rounded-xl">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">💡</span>
+                <div>
+                  <p className="font-bold text-yellow-900 mb-1">Pro Tip</p>
+                  <p className="text-sm text-yellow-800">
+                    Use the color picker or enter hex codes manually. Leave
+                    fields empty to keep current values.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <button
               onClick={handleUpdate}
               disabled={updateMutation.isPending}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition disabled:bg-gray-400"
+              className="w-full bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:from-violet-700 hover:via-purple-700 hover:to-fuchsia-700 text-white py-4 rounded-xl font-black text-lg shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 disabled:from-gray-400 disabled:via-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed disabled:transform-none"
             >
-              {updateMutation.isPending ? "Updating..." : "💾 Update Settings"}
+              {updateMutation.isPending ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Updating...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="text-2xl">💾</span>
+                  Update Settings
+                </span>
+              )}
             </button>
 
             {updateMutation.error && (
@@ -483,36 +572,49 @@ const SettingsTestPage = () => {
         </div>
 
         {/* Info Section */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">
-            💡 Settings Guide:
+        <div className="mt-6 bg-gradient-to-r from-violet-100 via-purple-100 to-fuchsia-100 border-2 border-violet-300 rounded-2xl p-6 shadow-lg">
+          <h3 className="font-black text-violet-900 mb-4 text-xl flex items-center gap-2">
+            <span className="text-2xl">📖</span>
+            Settings Guide
           </h3>
-          <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-            <li>
-              <strong>Mosque Name:</strong> Display name of your mosque or
-              Islamic center
-            </li>
-            <li>
-              <strong>Language Code:</strong> Default language for the
-              application (2-4 characters)
-            </li>
-            <li>
-              <strong>Time Format:</strong> Choose between 12-hour (AM/PM) or
-              24-hour format
-            </li>
-            <li>
-              <strong>Ramadan Mode:</strong> Toggle special Ramadan features and
-              displays
-            </li>
-            <li>
-              <strong>Theme Colors:</strong> Customize the application's color
-              scheme
-            </li>
-            <li>
-              <strong>Column Search:</strong> Query individual settings by
-              column name
-            </li>
-          </ul>
+          <div className="grid md:grid-cols-2 gap-3">
+            <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl">
+              <p className="text-sm text-violet-800">
+                <span className="font-bold">🏢 Mosque Name:</span> Display name
+                of your mosque or Islamic center
+              </p>
+            </div>
+            <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl">
+              <p className="text-sm text-violet-800">
+                <span className="font-bold">🌍 Language Code:</span> Default
+                language for the application (2-4 characters)
+              </p>
+            </div>
+            <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl">
+              <p className="text-sm text-violet-800">
+                <span className="font-bold">⏰ Time Format:</span> Choose
+                between 12-hour (AM/PM) or 24-hour format
+              </p>
+            </div>
+            <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl">
+              <p className="text-sm text-violet-800">
+                <span className="font-bold">🌙 Ramadan Mode:</span> Toggle
+                special Ramadan features and displays
+              </p>
+            </div>
+            <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl">
+              <p className="text-sm text-violet-800">
+                <span className="font-bold">📅 Hijri Offset:</span> Adjust the
+                Hijri calendar by +/- days (including 0)
+              </p>
+            </div>
+            <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl">
+              <p className="text-sm text-violet-800">
+                <span className="font-bold">🎨 Theme Colors:</span> Customize
+                the application's color scheme
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

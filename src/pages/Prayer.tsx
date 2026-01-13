@@ -10,7 +10,6 @@ const PrayerTimesTestPage = () => {
   const [endMonth, setEndMonth] = useState<number | undefined>(undefined);
   const [endDay, setEndDay] = useState<number | undefined>(undefined);
 
-  // Debounced values
   const [debouncedMonth, setDebouncedMonth] = useState<number | undefined>(
     undefined
   );
@@ -36,7 +35,6 @@ const PrayerTimesTestPage = () => {
     isha: "",
   });
 
-  // Debounce effect
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedMonth(month);
@@ -44,82 +42,142 @@ const PrayerTimesTestPage = () => {
       setDebouncedEndMonth(endMonth);
       setDebouncedEndDay(endDay);
       setDebouncedLimit(limit);
-    }, 500); // 500ms delay
-
+    }, 500);
     return () => clearTimeout(timer);
   }, [month, day, endMonth, endDay, limit]);
 
   const Loading = () => (
-    <div className="text-blue-500 font-semibold animate-pulse">Loading...</div>
+    <div className="text-indigo-600 font-semibold animate-pulse flex items-center justify-center gap-2 py-8">
+      <div className="w-5 h-5 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+      Loading...
+    </div>
   );
 
   const ErrorMessage = ({ message }: { message: string }) => (
-    <div className="text-red-500 font-semibold bg-red-50 p-3 rounded">
-      Error: {message}
+    <div className="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 p-4 rounded-xl shadow-md">
+      <div className="flex items-center gap-2">
+        <span className="text-2xl">⚠️</span>
+        <div>
+          <p className="font-bold text-red-800">Error</p>
+          <p className="text-red-600 text-sm">{message}</p>
+        </div>
+      </div>
     </div>
   );
 
   const PrayerTimeCard = ({ data, title }: { data: any; title: string }) => (
-    <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
-      <h3 className="font-bold text-lg mb-3 text-gray-800 border-b pb-2">
+    <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-indigo-100">
+      <h3 className="font-black text-xl mb-4 pb-3 text-indigo-900 border-b-2 border-gray-200 flex items-center gap-2">
+        <span className="text-2xl">📋</span>
         {title}
       </h3>
       {Array.isArray(data) ? (
-        <div className="space-y-2 max-h-96 overflow-y-auto">
+        <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
           {data.map((item, idx) => (
-            <div key={idx} className="text-sm border-b pb-2">
-              <div className="font-semibold text-gray-700">
+            <div
+              key={idx}
+              className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-xl border-2 border-indigo-200"
+            >
+              <div className="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                <span className="text-lg">📅</span>
                 {item.month}/{item.day}
               </div>
-              <div className="grid grid-cols-2 gap-1 text-xs text-gray-600">
-                <div>Fajr: {item.fajr}</div>
-                <div>Sunrise: {item.sunrise}</div>
-                <div>Dhuhr: {item.dhuhr}</div>
-                <div>Asr: {item.asr}</div>
-                <div>Maghrib: {item.maghrib}</div>
-                <div>Isha: {item.isha}</div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {[
+                  { label: "Fajr", value: item.fajr, icon: "🌅" },
+                  { label: "Sunrise", value: item.sunrise, icon: "☀️" },
+                  { label: "Dhuhr", value: item.dhuhr, icon: "🌞" },
+                  { label: "Asr", value: item.asr, icon: "🌤️" },
+                  { label: "Maghrib", value: item.maghrib, icon: "🌆" },
+                  { label: "Isha", value: item.isha, icon: "🌙" },
+                ].map(({ label, value, icon }) => (
+                  <div key={label} className="flex items-center gap-1">
+                    <span>{icon}</span>
+                    <span className="font-medium text-gray-700">{label}:</span>
+                    <span className="text-indigo-700 font-semibold">
+                      {value}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="space-y-1 text-sm">
-          <div className="flex justify-between">
-            <span className="font-medium">Month/Day:</span>
-            <span>
-              {data.month}/{data.day}
-            </span>
+        <div className="space-y-3">
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 px-4 py-3 rounded-xl border-2 border-blue-200">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-gray-700 flex items-center gap-2">
+                <span className="text-xl">📅</span>
+                Date:
+              </span>
+              <span className="text-xl font-black text-blue-700">
+                {data.month}/{data.day}
+              </span>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span className="font-medium">Fajr:</span>
-            <span>{data.fajr}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium">Sunrise:</span>
-            <span>{data.sunrise}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium">Dhuhr:</span>
-            <span>{data.dhuhr}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium">Asr:</span>
-            <span>{data.asr}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium">Maghrib:</span>
-            <span>{data.maghrib}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium">Isha:</span>
-            <span>{data.isha}</span>
-          </div>
+          {[
+            {
+              label: "Fajr",
+              value: data.fajr,
+              icon: "🌅",
+              color: "from-orange-100 to-amber-100",
+              border: "border-orange-300",
+            },
+            {
+              label: "Sunrise",
+              value: data.sunrise,
+              icon: "☀️",
+              color: "from-yellow-100 to-amber-100",
+              border: "border-yellow-300",
+            },
+            {
+              label: "Dhuhr",
+              value: data.dhuhr,
+              icon: "🌞",
+              color: "from-yellow-100 to-orange-100",
+              border: "border-yellow-300",
+            },
+            {
+              label: "Asr",
+              value: data.asr,
+              icon: "🌤️",
+              color: "from-amber-100 to-orange-100",
+              border: "border-amber-300",
+            },
+            {
+              label: "Maghrib",
+              value: data.maghrib,
+              icon: "🌆",
+              color: "from-pink-100 to-rose-100",
+              border: "border-pink-300",
+            },
+            {
+              label: "Isha",
+              value: data.isha,
+              icon: "🌙",
+              color: "from-indigo-100 to-purple-100",
+              border: "border-indigo-300",
+            },
+          ].map(({ label, value, icon, color, border }) => (
+            <div
+              key={label}
+              className={`flex justify-between items-center bg-gradient-to-r ${color} p-4 rounded-xl border-2 ${border}`}
+            >
+              <span className="font-bold text-gray-800 flex items-center gap-2">
+                <span className="text-2xl">{icon}</span>
+                {label}:
+              </span>
+              <span className="text-2xl font-black text-indigo-700">
+                {value}
+              </span>
+            </div>
+          ))}
         </div>
       )}
     </div>
   );
 
-  // Determine which query to use based on filled inputs
   const queryType = (() => {
     if (
       debouncedEndMonth &&
@@ -138,7 +196,6 @@ const PrayerTimesTestPage = () => {
     return "all";
   })();
 
-  // Fetch data based on query type (using debounced values)
   const getAllQuery = usePrayerTimes.getAll(format, debouncedLimit);
   const getMonthlyQuery = usePrayerTimes.getMonthly(
     debouncedMonth || 1,
@@ -159,7 +216,6 @@ const PrayerTimesTestPage = () => {
   );
   const getTodayQuery = usePrayerTimes.today(format);
 
-  // Select active query based on type
   const activeQuery = (() => {
     switch (queryType) {
       case "range":
@@ -188,18 +244,13 @@ const PrayerTimesTestPage = () => {
     }
   };
 
-  // Update Mutations
   const updateMutation = usePrayerTimes.update();
   const updateByRangeMutation = usePrayerTimes.updateByRange();
 
-  // Convert 12-hour format to 24-hour format (HH:mm)
   const convertTo24Hour = (time12h: string): string => {
     if (!time12h) return "";
-
-    // If already in 24-hour format (HH:mm), return as is
     if (/^\d{2}:\d{2}$/.test(time12h)) return time12h;
 
-    // Parse 12-hour format
     const match = time12h.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
     if (!match) return time12h;
 
@@ -215,7 +266,6 @@ const PrayerTimesTestPage = () => {
     return `${hour.toString().padStart(2, "0")}:${minutes}`;
   };
 
-  // Prefill update form when specific day data is loaded
   useEffect(() => {
     if (
       queryType === "specific" &&
@@ -283,40 +333,101 @@ const PrayerTimesTestPage = () => {
     setLimit(undefined);
   };
 
+  const prayerFields = [
+    {
+      key: "fajr",
+      label: "Fajr",
+      icon: "🌅",
+      color: "from-orange-100 to-amber-100",
+      border: "border-orange-300",
+    },
+    {
+      key: "sunrise",
+      label: "Sunrise",
+      icon: "☀️",
+      color: "from-yellow-100 to-amber-100",
+      border: "border-yellow-300",
+    },
+    {
+      key: "dhuhr",
+      label: "Dhuhr",
+      icon: "🌞",
+      color: "from-yellow-100 to-orange-100",
+      border: "border-yellow-300",
+    },
+    {
+      key: "asr",
+      label: "Asr",
+      icon: "🌤️",
+      color: "from-amber-100 to-orange-100",
+      border: "border-amber-300",
+    },
+    {
+      key: "maghrib",
+      label: "Maghrib",
+      icon: "🌆",
+      color: "from-pink-100 to-rose-100",
+      border: "border-pink-300",
+    },
+    {
+      key: "isha",
+      label: "Isha",
+      icon: "🌙",
+      color: "from-indigo-100 to-purple-100",
+      border: "border-indigo-300",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-          Prayer Times API Test Page
-        </h1>
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg mb-4">
+            <h1 className="text-4xl font-black flex items-center gap-3">
+              <span className="text-5xl">🕌</span>
+              Prayer Times Management
+            </h1>
+          </div>
+          <p className="text-gray-600 text-lg">
+            Query and manage prayer times with powerful filtering options
+          </p>
+        </div>
 
         {/* Unified Query Controls */}
-        <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Query Filters</h2>
+        <div className="bg-white p-6 rounded-2xl shadow-xl mb-6 border-2 border-indigo-100">
+          <div className="flex justify-between items-center mb-6 pb-3 border-b-2 border-gray-200">
+            <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3">
+              <span className="text-3xl">🔍</span>
+              Query Filters
+            </h2>
             <button
               onClick={clearFilters}
-              className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded transition"
+              className="bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 px-5 py-2 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
-              Clear All
+              🗑️ Clear All
             </button>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Format</label>
+              <label className="block text-sm font-bold mb-2 text-gray-700">
+                Format
+              </label>
               <select
                 value={format}
                 onChange={(e) => setFormat(Number(e.target.value) as 12 | 24)}
-                className="border rounded px-3 py-2 w-full"
+                className="border-2 border-indigo-300 rounded-xl px-3 py-2 w-full font-semibold focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 focus:outline-none transition-all"
               >
-                <option value={12}>12 Hour</option>
-                <option value={24}>24 Hour</option>
+                <option value={12}>🕐 12 Hour</option>
+                <option value={24}>🕛 24 Hour</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Limit</label>
+              <label className="block text-sm font-bold mb-2 text-gray-700">
+                Limit
+              </label>
               <input
                 type="number"
                 value={limit || ""}
@@ -324,12 +435,14 @@ const PrayerTimesTestPage = () => {
                   setLimit(e.target.value ? Number(e.target.value) : undefined)
                 }
                 placeholder="No limit"
-                className="border rounded px-3 py-2 w-full"
+                className="border-2 border-indigo-300 rounded-xl px-3 py-2 w-full font-semibold focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 focus:outline-none transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Month</label>
+              <label className="block text-sm font-bold mb-2 text-gray-700">
+                Month
+              </label>
               <input
                 type="number"
                 min="1"
@@ -339,12 +452,14 @@ const PrayerTimesTestPage = () => {
                   setMonth(e.target.value ? Number(e.target.value) : undefined)
                 }
                 placeholder="Any"
-                className="border rounded px-3 py-2 w-full"
+                className="border-2 border-purple-300 rounded-xl px-3 py-2 w-full font-semibold focus:ring-4 focus:ring-purple-200 focus:border-purple-500 focus:outline-none transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Day</label>
+              <label className="block text-sm font-bold mb-2 text-gray-700">
+                Day
+              </label>
               <input
                 type="number"
                 min="1"
@@ -354,12 +469,12 @@ const PrayerTimesTestPage = () => {
                   setDay(e.target.value ? Number(e.target.value) : undefined)
                 }
                 placeholder="Any"
-                className="border rounded px-3 py-2 w-full"
+                className="border-2 border-purple-300 rounded-xl px-3 py-2 w-full font-semibold focus:ring-4 focus:ring-purple-200 focus:border-purple-500 focus:outline-none transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-bold mb-2 text-gray-700">
                 End Month
               </label>
               <input
@@ -373,12 +488,14 @@ const PrayerTimesTestPage = () => {
                   )
                 }
                 placeholder="Range end"
-                className="border rounded px-3 py-2 w-full"
+                className="border-2 border-pink-300 rounded-xl px-3 py-2 w-full font-semibold focus:ring-4 focus:ring-pink-200 focus:border-pink-500 focus:outline-none transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">End Day</label>
+              <label className="block text-sm font-bold mb-2 text-gray-700">
+                End Day
+              </label>
               <input
                 type="number"
                 min="1"
@@ -388,38 +505,47 @@ const PrayerTimesTestPage = () => {
                   setEndDay(e.target.value ? Number(e.target.value) : undefined)
                 }
                 placeholder="Range end"
-                className="border rounded px-3 py-2 w-full"
+                className="border-2 border-pink-300 rounded-xl px-3 py-2 w-full font-semibold focus:ring-4 focus:ring-pink-200 focus:border-pink-500 focus:outline-none transition-all"
               />
             </div>
           </div>
 
-          <div className="mt-4 p-3 bg-blue-50 rounded text-sm">
-            <span className="font-semibold">Active Query: </span>
-            <span className="text-blue-700">{queryType.toUpperCase()}</span>
-            <span className="text-gray-600 ml-2">
-              {queryType === "all" && "(fetching all records)"}
-              {queryType === "monthly" && `(fetching month ${debouncedMonth})`}
-              {queryType === "specific" &&
-                `(fetching ${debouncedMonth}/${debouncedDay})`}
-              {queryType === "range" &&
-                `(fetching ${debouncedMonth}/${debouncedDay} to ${debouncedEndMonth}/${debouncedEndDay})`}
-            </span>
-            {(month !== debouncedMonth ||
-              day !== debouncedDay ||
-              endMonth !== debouncedEndMonth ||
-              endDay !== debouncedEndDay ||
-              limit !== debouncedLimit) && (
-              <span className="text-orange-600 ml-2 animate-pulse">
-                ⏳ Typing...
+          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-black text-blue-900">Active Query:</span>
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-1 rounded-full font-bold text-sm">
+                {queryType.toUpperCase()}
               </span>
-            )}
+              <span className="text-gray-600 text-sm">
+                {queryType === "all" && "(fetching all records)"}
+                {queryType === "monthly" &&
+                  `(fetching month ${debouncedMonth})`}
+                {queryType === "specific" &&
+                  `(fetching ${debouncedMonth}/${debouncedDay})`}
+                {queryType === "range" &&
+                  `(fetching ${debouncedMonth}/${debouncedDay} to ${debouncedEndMonth}/${debouncedEndDay})`}
+              </span>
+              {(month !== debouncedMonth ||
+                day !== debouncedDay ||
+                endMonth !== debouncedEndMonth ||
+                endDay !== debouncedEndDay ||
+                limit !== debouncedLimit) && (
+                <span className="text-orange-600 animate-pulse flex items-center gap-1 bg-orange-100 px-3 py-1 rounded-full text-sm font-semibold">
+                  <div className="w-3 h-3 border-2 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
+                  Typing...
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Query Results */}
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           <div>
-            <h3 className="text-lg font-semibold mb-3">Dynamic Query Result</h3>
+            <h3 className="text-xl font-black mb-4 text-gray-800 flex items-center gap-2">
+              <span className="text-2xl">📊</span>
+              Dynamic Query Result
+            </h3>
             {activeQuery.isPending && <Loading />}
             {activeQuery.error && (
               <ErrorMessage message={activeQuery.error.message} />
@@ -430,7 +556,10 @@ const PrayerTimesTestPage = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-3">Today's Prayer Times</h3>
+            <h3 className="text-xl font-black mb-4 text-gray-800 flex items-center gap-2">
+              <span className="text-2xl">📅</span>
+              Today's Prayer Times
+            </h3>
             {getTodayQuery.isPending && <Loading />}
             {getTodayQuery.error && (
               <ErrorMessage message={getTodayQuery.error.message} />
@@ -444,45 +573,54 @@ const PrayerTimesTestPage = () => {
         {/* Update Sections */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Update Single Day */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-3">Update Single Day</h2>
-            <div className="space-y-3">
-              <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded">
-                <p className="font-medium mb-1">Using query filters above:</p>
+          <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-green-100">
+            <h2 className="text-2xl font-black mb-4 pb-3 border-b-2 border-gray-200 flex items-center gap-3">
+              <span className="text-3xl">✏️</span>
+              Update Single Day
+            </h2>
+            <div className="space-y-4">
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
+                <p className="font-bold mb-2 text-blue-900">
+                  Using query filters above:
+                </p>
                 {month && day ? (
-                  <p className="text-green-700">
+                  <p className="text-green-700 font-semibold flex items-center gap-2">
+                    <span className="text-xl">✅</span>
                     Will update {month}/{day}
                   </p>
                 ) : (
-                  <p className="text-red-600">
+                  <p className="text-red-700 font-semibold flex items-center gap-2">
+                    <span className="text-xl">⚠️</span>
                     Please fill Month and Day in the filters above
                   </p>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                {["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"].map(
-                  (prayer) => (
-                    <div key={prayer}>
-                      <label className="block text-sm font-medium mb-1 capitalize">
-                        {prayer}
-                      </label>
-                      <input
-                        type="time"
-                        value={
-                          updateData[prayer as keyof TPrayerTimeUpdate] || ""
-                        }
-                        onChange={(e) =>
-                          setUpdateData({
-                            ...updateData,
-                            [prayer]: e.target.value,
-                          })
-                        }
-                        className="border rounded px-3 py-2 w-full text-sm"
-                      />
-                    </div>
-                  )
-                )}
+
+              <div className="grid grid-cols-2 gap-3">
+                {prayerFields.map(({ key, label, icon, color, border }) => (
+                  <div
+                    key={key}
+                    className={`bg-gradient-to-br ${color} p-3 rounded-xl border-2 ${border}`}
+                  >
+                    <label className="block text-sm font-bold mb-2 text-gray-800 flex items-center gap-1">
+                      <span>{icon}</span>
+                      {label}
+                    </label>
+                    <input
+                      type="time"
+                      value={updateData[key as keyof TPrayerTimeUpdate] || ""}
+                      onChange={(e) =>
+                        setUpdateData({
+                          ...updateData,
+                          [key]: e.target.value,
+                        })
+                      }
+                      className="border-2 border-gray-300 rounded-lg px-3 py-2 w-full font-semibold focus:ring-4 focus:ring-green-200 focus:border-green-500 focus:outline-none transition-all"
+                    />
+                  </div>
+                ))}
               </div>
+
               <button
                 onClick={handleUpdate}
                 disabled={
@@ -492,12 +630,21 @@ const PrayerTimesTestPage = () => {
                   !!endMonth ||
                   !!endDay
                 }
-                className="w-full bg-blue-600 text-white py-2 rounded font-medium hover:bg-blue-700 transition disabled:bg-gray-400"
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-4 rounded-xl font-black text-lg shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed disabled:transform-none"
               >
-                {updateMutation.isPending
-                  ? "Updating..."
-                  : "Update Prayer Times"}
+                {updateMutation.isPending ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Updating...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="text-2xl">💾</span>
+                    Update Prayer Times
+                  </span>
+                )}
               </button>
+
               {updateMutation.error && (
                 <ErrorMessage message={updateMutation.error.message} />
               )}
@@ -505,25 +652,36 @@ const PrayerTimesTestPage = () => {
           </div>
 
           {/* Update Range */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-3">Update Range</h2>
-            <div className="space-y-3">
-              <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded">
-                <p className="font-medium mb-1">Using query filters above:</p>
+          <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-purple-100">
+            <h2 className="text-2xl font-black mb-4 pb-3 border-b-2 border-gray-200 flex items-center gap-3">
+              <span className="text-3xl">📆</span>
+              Update Range
+            </h2>
+            <div className="space-y-4">
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl border-2 border-purple-200">
+                <p className="font-bold mb-2 text-purple-900">
+                  Using query filters above:
+                </p>
                 {month && day && endMonth && endDay ? (
-                  <p className="text-green-700">
+                  <p className="text-green-700 font-semibold flex items-center gap-2">
+                    <span className="text-xl">✅</span>
                     Will update from {month}/{day} to {endMonth}/{endDay}
                   </p>
                 ) : (
-                  <p className="text-red-600">
-                    Please fill Month, Day, End Month, and End Day in the
-                    filters above
+                  <p className="text-red-700 font-semibold flex items-center gap-2">
+                    <span className="text-xl">⚠️</span>
+                    Please fill Month, Day, End Month, and End Day
                   </p>
                 )}
               </div>
-              <div className="text-sm text-gray-600 bg-blue-50 p-2 rounded">
-                Using prayer times from single update form (left side)
+
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-500 p-4 rounded-xl">
+                <p className="text-sm text-blue-800 font-semibold flex items-center gap-2">
+                  <span className="text-lg">ℹ️</span>
+                  Using prayer times from single update form (left side)
+                </p>
               </div>
+
               <button
                 onClick={handleRangeUpdate}
                 disabled={
@@ -533,15 +691,58 @@ const PrayerTimesTestPage = () => {
                   !endMonth ||
                   !endDay
                 }
-                className="w-full bg-green-600 text-white py-2 rounded font-medium hover:bg-green-700 transition disabled:bg-gray-400"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 rounded-xl font-black text-lg shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed disabled:transform-none"
               >
-                {updateByRangeMutation.isPending
-                  ? "Updating..."
-                  : "Update Range"}
+                {updateByRangeMutation.isPending ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Updating...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="text-2xl">📆</span>
+                    Update Range
+                  </span>
+                )}
               </button>
+
               {updateByRangeMutation.error && (
                 <ErrorMessage message={updateByRangeMutation.error.message} />
               )}
+            </div>
+          </div>
+        </div>
+
+        {/* Info Section */}
+        <div className="mt-6 bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100 border-2 border-indigo-300 rounded-2xl p-6 shadow-lg">
+          <h3 className="font-black text-indigo-900 mb-4 text-xl flex items-center gap-2">
+            <span className="text-2xl">💡</span>
+            Quick Tips
+          </h3>
+          <div className="grid md:grid-cols-3 gap-3">
+            <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl">
+              <p className="text-sm text-indigo-800">
+                <span className="font-bold">📆 Range Update:</span> Apply
+                changes to multiple days at once using date ranges
+              </p>
+            </div>
+            <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl">
+              <p className="text-sm text-indigo-800">
+                <span className="font-bold">🔄 Auto-prefill:</span> Form fills
+                automatically when selecting a specific day
+              </p>
+            </div>
+            <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl">
+              <p className="text-sm text-indigo-800">
+                <span className="font-bold">⏰ 24H Format:</span> All times are
+                stored in 24-hour format (HH:mm)
+              </p>
+            </div>
+            <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl">
+              <p className="text-sm text-indigo-800">
+                <span className="font-bold">📅 Today Query:</span> Separate
+                query shows current day's prayer times
+              </p>
             </div>
           </div>
         </div>
