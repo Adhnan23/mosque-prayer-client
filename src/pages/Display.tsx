@@ -148,7 +148,7 @@ const PrayerDisplayTV = () => {
       {
         id: isFriday ? "jummah" : "dhuhr",
         time: isFriday ? ikamah.jummah : today.dhuhr,
-        iq: isFriday ? ikamah.jummah : today.dhuhr,
+        iq: isFriday ? null : ikamah.dhuhr,
       },
       { id: "asr", time: today.asr, iq: ikamah.asr },
       { id: "maghrib", time: today.maghrib, iq: ikamah.maghrib },
@@ -167,80 +167,174 @@ const PrayerDisplayTV = () => {
 
   const active = useMemo(() => {
     if (timeline.length === 0) return null;
-    let nextIdx = timeline.findIndex((p) => parseToToday(p.time)?.isAfter(now));
-    if (nextIdx === -1) nextIdx = 0;
 
+    let nextIdx = -1;
     let currentIdx = -1;
+    let isInIkamahWindow = false;
+    let ikamahTarget: moment.Moment | null = null;
+    let isInFreezeWindow = false;
+
+    // Find current prayer (most recent prayer that has passed)
     for (let i = timeline.length - 1; i >= 0; i--) {
-      if (parseToToday(timeline[i].time)?.isBefore(now)) {
+      const prayerTime = parseToToday(timeline[i].time);
+      if (prayerTime && prayerTime.isBefore(now)) {
         currentIdx = i;
         break;
       }
     }
     if (currentIdx === -1) currentIdx = timeline.length - 1;
 
-    const target = parseToToday(timeline[nextIdx].time);
-    if (
-      nextIdx === 0 &&
-      now.isAfter(parseToToday(timeline[timeline.length - 1].time))
-    ) {
-      target?.add(1, "day");
+    const currentPrayer = timeline[currentIdx];
+
+    // Check if we're in ikamah window (between adhan and iqamah)
+    if (currentPrayer.iq) {
+      const prayerTime = parseToToday(currentPrayer.time);
+      const ikamahTime = parseToToday(currentPrayer.iq);
+
+      if (prayerTime && ikamahTime) {
+        if (now.isAfter(prayerTime) && now.isBefore(ikamahTime)) {
+          // In ikamah window - show countdown
+          isInIkamahWindow = true;
+          ikamahTarget = ikamahTime;
+          nextIdx = currentIdx;
+        } else if (now.isAfter(ikamahTime)) {
+          // Check if in freeze window (5 min after iqamah)
+          const freezeEnd = moment(ikamahTime).add(1, "minutes");
+          if (now.isBefore(freezeEnd)) {
+            isInFreezeWindow = true;
+            nextIdx = currentIdx;
+          }
+        }
+      }
+    } else if (currentPrayer.time) {
+      // For prayers without iqamah (sunrise, jummah during ikamah window check)
+      const prayerTime = parseToToday(currentPrayer.time);
+      if (prayerTime) {
+        const freezeEnd = moment(prayerTime).add(1, "minutes");
+        if (now.isAfter(prayerTime) && now.isBefore(freezeEnd)) {
+          isInFreezeWindow = true;
+          nextIdx = currentIdx;
+        }
+      }
+    }
+
+    // If NOT in special windows, find the actual next prayer
+    if (!isInIkamahWindow && !isInFreezeWindow) {
+      nextIdx = -1;
+
+      // Search for next upcoming prayer
+      for (let i = 0; i < timeline.length; i++) {
+        const checkTime = parseToToday(timeline[i].time);
+        if (checkTime && checkTime.isAfter(now)) {
+          nextIdx = i;
+          break;
+        }
+      }
+
+      // If no prayer found (all prayers passed today), use first prayer (tomorrow)
+      if (nextIdx === -1) {
+        nextIdx = 0;
+      }
+    }
+
+    // Calculate countdown and target
+    let target: moment.Moment | null = null;
+
+    if (isInIkamahWindow && ikamahTarget) {
+      target = ikamahTarget;
+    } else if (isInFreezeWindow) {
+      target = now; // Results in 00:00:00
+    } else {
+      // Normal mode - count down to next prayer's iqamah (or adhan if no iqamah)
+      const nextPrayer = timeline[nextIdx];
+      target = parseToToday(nextPrayer.iq || nextPrayer.time);
+
+      // Handle day rollover
+      if (nextIdx === 0 && currentIdx === timeline.length - 1) {
+        target?.add(1, "day");
+      }
     }
 
     const diff = moment.duration(target?.diff(now));
-    const pad = (n: number) => Math.floor(n).toString().padStart(2, "0");
+    const pad = (n: number) =>
+      Math.floor(Math.max(0, n)).toString().padStart(2, "0");
 
     return {
       nextIdx,
       currentIdx,
+      isInIkamahWindow,
+      isInFreezeWindow,
       countdown: `${pad(diff.hours())}:${pad(diff.minutes())}:${pad(
         diff.seconds()
       )}`,
     };
-  }, [now, timeline]);
+  }, [now, timeline, currentLang, t]);
 
   // Sidebar Auto-Scroll
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
     let direction = 1;
-
-    let scrollInterval: NodeJS.Timeout | null = null;
+    let scrollInterval: ReturnType<typeof setInterval> | null = null;
+    let pauseTimeout: ReturnType<typeof setTimeout> | null = null;
 
     const runScroll = () => {
       if (el.scrollHeight <= el.clientHeight) return;
-      scrollInterval = setInterval(() => {
-        if (direction === 1) {
-          el.scrollTop += 3;
-          if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
-            direction = -1;
-            if (scrollInterval) clearInterval(scrollInterval);
-            setTimeout(runScroll, 1200);
+
+      const doScroll = () => {
+        scrollInterval = setInterval(() => {
+          if (direction === 1) {
+            el.scrollTop += 2;
+            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
+              direction = -1;
+              if (scrollInterval) clearInterval(scrollInterval);
+              pauseTimeout = setTimeout(() => {
+                doScroll();
+              }, 2000);
+            }
+          } else {
+            el.scrollTop -= 2;
+            if (el.scrollTop <= 1) {
+              direction = 1;
+              if (scrollInterval) clearInterval(scrollInterval);
+              pauseTimeout = setTimeout(() => {
+                doScroll();
+              }, 2000);
+            }
           }
-        } else {
-          el.scrollTop -= 3;
-          if (el.scrollTop <= 0) {
-            direction = 1;
-            if (scrollInterval) clearInterval(scrollInterval);
-            setTimeout(runScroll, 1200);
-          }
-        }
-      }, 25);
+        }, 30);
+      };
+
+      doScroll();
     };
 
     runScroll();
     return () => {
       if (scrollInterval) clearInterval(scrollInterval);
+      if (pauseTimeout) clearTimeout(pauseTimeout);
     };
   }, [timeline]);
 
   const activeNotices = useMemo(() => {
+    const currentDate = moment();
     return (
-      notices?.filter(
-        (n) => n.language_code === settings?.language_code && n.is_active
-      ) || []
+      notices?.filter((n) => {
+        // Check language and active status
+        if (n.language_code !== settings?.language_code || !n.is_active) {
+          return false;
+        }
+
+        // Check if notice is within date bounds
+        const startDate = moment(n.start_date).startOf("day");
+        const endDate = moment(n.end_date).endOf("day");
+
+        return (
+          currentDate.isSameOrAfter(startDate) &&
+          currentDate.isSameOrBefore(endDate)
+        );
+      }) || []
     );
-  }, [notices, settings]);
+  }, [notices, settings, now]);
 
   if (!settings || !active) return null;
 
@@ -268,7 +362,7 @@ const PrayerDisplayTV = () => {
       >
         <div>
           <h1
-            className="text-[7.5vh] font-black uppercase leading-none"
+            className="text-[6vh] font-black uppercase leading-none"
             style={{ color: primaryColor }}
           >
             {t("mosque", "name") ? t("mosque", "name") : settings.mosque_name}
@@ -292,12 +386,12 @@ const PrayerDisplayTV = () => {
         </div>
         <div className="text-right">
           <div
-            className="text-[12vh] font-black leading-none tabular-nums flex items-baseline"
+            className="text-[12vh] font-black leading-none tabular-nums flex items-baseline min-w-[35vw]"
             style={{ color: accentColor }}
           >
-            {now.format(settings.time_format === 12 ? "hh:mm" : "HH:mm")}
+            {now.format(settings.time_format === 12 ? "hh:mm:ss" : "HH:mm:ss")}
             <span
-              className="text-[4vh] ml-[0.8vw] uppercase"
+              className="text-[4vh] ml-[0.8vw] uppercase w-[4vw]"
               style={{ color: secondaryColor }}
             >
               {settings.time_format === 12 ? now.format("A") : ""}
@@ -307,7 +401,7 @@ const PrayerDisplayTV = () => {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 flex gap-[1.5vw] mt-[2.5vh] px-[1vw] min-h-0">
+      <div className="flex-1 flex gap-[1.5vw] mt-[2.5vh] px-[0.5vw] min-h-0">
         <div
           className="flex-[1.6] flex flex-col justify-center border-[0.8vh] rounded-[4vh] p-[4vh] shadow-2xl"
           style={{
@@ -315,78 +409,137 @@ const PrayerDisplayTV = () => {
             backgroundColor: `${backgroundColor}dd`,
           }}
         >
-          <p
-            className="text-[4.5vh] font-bold uppercase mb-[1vh]"
-            style={{ color: accentColor }}
-          >
-            {t("ui", "next_prayer")}
-          </p>
-          <h2
-            className="text-[13vh] font-black leading-tight mb-[4vh] uppercase"
-            style={{ color: foregroundColor }}
-          >
-            {t("prayer_names", timeline[active.nextIdx].id) !==
-            timeline[active.nextIdx].id
-              ? t("prayer_names", timeline[active.nextIdx].id)
-              : t("ramadan", timeline[active.nextIdx].id)}
-          </h2>
-          <div className="flex gap-[2vw]">
+          {/* 2x2 Grid Layout */}
+          <div className="grid grid-cols-2 gap-[2vw]">
+            {/* TOP LEFT - Next Prayer (spans 2 columns when no countdown) */}
             <div
-              className="flex-1 p-[3.5vh] rounded-[3vh] border-l-[1.2vh] shadow-xl"
+              className={`p-[3.5vh] rounded-[3vh] border-l-[1.2vh] shadow-xl ${
+                active.isInIkamahWindow ? "" : "col-span-2"
+              }`}
+              style={{
+                backgroundColor: `${foregroundColor}0d`,
+                borderColor: foregroundColor,
+              }}
+            >
+              <p
+                className="text-[3.2vh] font-bold uppercase mb-[0.5vh]"
+                style={{ color: accentColor }}
+              >
+                {t("ui", "next_prayer")}
+              </p>
+              <h2
+                className="text-[8vh] font-black leading-tight uppercase"
+                style={{ color: foregroundColor }}
+              >
+                {t("prayer_names", timeline[active.nextIdx].id) !==
+                timeline[active.nextIdx].id
+                  ? t("prayer_names", timeline[active.nextIdx].id)
+                  : t("ramadan", timeline[active.nextIdx].id)}
+              </h2>
+            </div>
+
+            {/* TOP RIGHT - Countdown (Only during ikamah window) */}
+            {active.isInIkamahWindow && (
+              <div
+                className="p-[3.5vh] rounded-[3vh] border-l-[1.2vh] shadow-xl"
+                style={{
+                  backgroundColor: `${foregroundColor}0d`,
+                  borderColor: secondaryColor,
+                }}
+              >
+                <p
+                  className="text-[3.2vh] font-bold uppercase mb-[0.5vh]"
+                  style={{ color: secondaryColor }}
+                >
+                  {currentLang === "en"
+                    ? "PRAYER STARTS IN"
+                    : currentLang === "ta"
+                    ? "தொழுகை தொடங்கும்"
+                    : currentLang === "si"
+                    ? "නමාසය ආරම්භ වේ"
+                    : t("ui", "preparation")}
+                </p>
+                <p
+                  className="text-[8vh] font-black tabular-nums leading-none"
+                  style={{ color: accentColor }}
+                >
+                  {active.countdown}
+                </p>
+              </div>
+            )}
+
+            {/* BOTTOM LEFT - Adhan Time */}
+            <div
+              className="p-[3.5vh] rounded-[3vh] border-l-[1.2vh] shadow-xl"
               style={{
                 backgroundColor: `${foregroundColor}0d`,
                 borderColor: accentColor,
               }}
             >
               <p
-                className="text-[3.2vh] font-bold uppercase mb-[0.5vh] whitespace-nowrap"
+                className="text-[3.2vh] font-bold uppercase mb-[0.5vh]"
                 style={{ color: accentColor }}
               >
-                {t("ui", "begins")}
+                {currentLang === "en"
+                  ? "ADHAN TIME"
+                  : currentLang === "ta"
+                  ? "அதான் நேரம்"
+                  : currentLang === "si"
+                  ? "අදාන් වේලාව"
+                  : t("ui", "prayer_time")}
               </p>
               <p
-                className="text-[9.5vh] font-black leading-none whitespace-nowrap"
+                className="text-[8vh] font-black leading-none whitespace-nowrap"
                 style={{ color: secondaryColor }}
               >
                 {timeline[active.nextIdx].time}
               </p>
             </div>
-            <div
-              className="flex-1 p-[3.5vh] rounded-[3vh] border-l-[1.2vh] shadow-xl"
-              style={{
-                backgroundColor: `${foregroundColor}0d`,
-                borderColor: primaryColor,
-              }}
-            >
-              <p
-                className="text-[3.2vh] font-bold uppercase mb-[0.5vh] whitespace-nowrap"
-                style={{ color: primaryColor }}
+
+            {/* BOTTOM RIGHT - Iqamah Time */}
+            {timeline[active.nextIdx].iq && (
+              <div
+                className="p-[3.5vh] rounded-[3vh] border-l-[1.2vh] shadow-xl"
+                style={{
+                  backgroundColor: `${foregroundColor}0d`,
+                  borderColor: primaryColor,
+                }}
               >
-                {settings.language_code === "ta"
-                  ? "மீதம்"
-                  : t("ui", "preparation")}
-              </p>
-              <p
-                className="text-[9.5vh] font-black tabular-nums leading-none"
-                style={{ color: accentColor }}
-              >
-                {active.countdown}
-              </p>
-            </div>
+                <p
+                  className="text-[3.2vh] font-bold uppercase mb-[0.5vh]"
+                  style={{ color: primaryColor }}
+                >
+                  {timeline[active.nextIdx].id === "jummah"
+                    ? currentLang === "en"
+                      ? "KHUTBAH"
+                      : currentLang === "ta"
+                      ? "குத்பா"
+                      : currentLang === "si"
+                      ? "කුත්බා"
+                      : t("ui", "khutbah")
+                    : t("ui", "iqamah")}
+                </p>
+                <p
+                  className="text-[8vh] font-black tabular-nums leading-none whitespace-nowrap"
+                  style={{ color: accentColor }}
+                >
+                  {timeline[active.nextIdx].iq}
+                </p>
+              </div>
+            )}
           </div>
         </div>
-
         <div
           ref={scrollRef}
-          className="flex-1 flex flex-col gap-[1.2vh] overflow-y-auto no-scrollbar scroll-smooth"
+          className="flex-1 flex flex-col gap-[1.2vh] overflow-y-auto no-scrollbar scroll-smooth pointer-events-none"
         >
           {timeline.map((p, idx) => {
             const isCurrent = idx === active.currentIdx;
             return (
               <div
                 key={p.id}
-                className={`flex justify-between items-center px-[2vw] py-[2.2vh] rounded-[2.5vh] border-[0.3vh] shrink-0 shadow-lg transition-all ${
-                  isCurrent ? "scale-[1.03] z-10" : "opacity-70"
+                className={`flex justify-between items-center px-[0.1vw] py-[2.2vh] rounded-[2.5vh] border-[0.3vh] shrink-0 shadow-lg transition-all ${
+                  isCurrent ? "z-10" : "opacity-70"
                 }`}
                 style={{
                   backgroundColor: isCurrent
@@ -427,18 +580,28 @@ const PrayerDisplayTV = () => {
                   >
                     {p.time}
                   </p>
-                  {p.iq && (
-                    <p
-                      className={`text-[2.2vh] font-bold mt-[0.5vh] whitespace-nowrap`}
-                      style={{
-                        color: isCurrent
-                          ? `${backgroundColor}aa`
-                          : `${foregroundColor}66`,
-                      }}
-                    >
-                      {t("ui", "iqamah")}: {p.iq}
-                    </p>
-                  )}
+                  {p.iq &&
+                    p.id !== "sunrise" &&
+                    p.id !== "suhur_end" &&
+                    p.id !== "taraweeh" && (
+                      <p
+                        className={`text-[2.2vh] font-bold mt-[0.5vh] whitespace-nowrap`}
+                        style={{
+                          color: isCurrent ? primaryColor : primaryColor,
+                        }}
+                      >
+                        {p.id === "jummah"
+                          ? currentLang === "en"
+                            ? "Khutbah: "
+                            : currentLang === "ta"
+                            ? "குத்பா: "
+                            : currentLang === "si"
+                            ? "කුත්බා: "
+                            : t("ui", "khutbah") + ": "
+                          : t("ui", "iqamah") + ": "}
+                        {p.iq}
+                      </p>
+                    )}
                 </div>
               </div>
             );
@@ -446,7 +609,7 @@ const PrayerDisplayTV = () => {
         </div>
       </div>
 
-      {/* FOOTER NOTICE */}
+      {/* FOOTER NOTICE - Only show if there are active notices */}
       {activeNotices.length > 0 && (
         <div
           className="h-[10vh] mt-[2.5vh] flex items-center border-t-[0.5vh] rounded-[2vh] px-[2vw] overflow-hidden shadow-2xl"
