@@ -63,13 +63,13 @@ const PrayerDisplayTV = () => {
     },
     ta: {
       days: [
-        "ஞாயிற்றுக்கிழமை",
-        "திங்கட்கிழமை",
-        "செவ்வாய்க்கிழமை",
-        "புதன்கிழமை",
-        "வியாழக்கிழமை",
-        "வெள்ளிக்கிழமை",
-        "சனிக்கிழமை",
+        "ஞாயிறு",
+        "திங்கள்",
+        "செவ்வாய்",
+        "புதன்",
+        "வியாழன்",
+        "வெள்ளி",
+        "சனி",
       ],
       months: [
         "ஜனவரி",
@@ -365,10 +365,10 @@ const PrayerDisplayTV = () => {
             className="text-[6vh] font-black uppercase leading-none"
             style={{ color: primaryColor }}
           >
-            {t("mosque", "name") ? t("mosque", "name") : settings.mosque_name}
+            {/* {t("mosque", "name") ? t("mosque", "name") : settings.mosque_name} */}
           </h1>
           <div
-            className="text-[3.2vh] font-bold mt-[0.8vh] flex items-center gap-3"
+            className="text-[2.6vh] font-bold mt-[0.8vh] flex items-center gap-3"
             style={{ color: accentColor }}
           >
             <span className="uppercase">{displayDay}</span>
@@ -422,13 +422,13 @@ const PrayerDisplayTV = () => {
               }}
             >
               <p
-                className="text-[3.2vh] font-bold uppercase mb-[0.5vh]"
+                className="text-[2.2vh] font-bold uppercase mb-[0.5vh]"
                 style={{ color: accentColor }}
               >
                 {t("ui", "next_prayer")}
               </p>
               <h2
-                className="text-[8vh] font-black leading-tight uppercase"
+                className="text-[7vh] font-black leading-tight uppercase"
                 style={{ color: foregroundColor }}
               >
                 {t("prayer_names", timeline[active.nextIdx].id) !==
@@ -448,7 +448,7 @@ const PrayerDisplayTV = () => {
                 }}
               >
                 <p
-                  className="text-[3.2vh] font-bold uppercase mb-[0.5vh]"
+                  className="text-[2.2vh] font-bold uppercase mb-[0.5vh]"
                   style={{ color: secondaryColor }}
                 >
                   {currentLang === "en"
@@ -460,7 +460,7 @@ const PrayerDisplayTV = () => {
                     : t("ui", "preparation")}
                 </p>
                 <p
-                  className="text-[8vh] font-black tabular-nums leading-none"
+                  className="text-[7vh] font-black tabular-nums leading-none"
                   style={{ color: accentColor }}
                 >
                   {active.countdown}
@@ -477,7 +477,7 @@ const PrayerDisplayTV = () => {
               }}
             >
               <p
-                className="text-[3.2vh] font-bold uppercase mb-[0.5vh]"
+                className="text-[2.2vh] font-bold uppercase mb-[0.5vh]"
                 style={{ color: accentColor }}
               >
                 {currentLang === "en"
@@ -489,7 +489,7 @@ const PrayerDisplayTV = () => {
                   : t("ui", "prayer_time")}
               </p>
               <p
-                className="text-[8vh] font-black leading-none whitespace-nowrap"
+                className="text-[7vh] font-black leading-none whitespace-nowrap"
                 style={{ color: secondaryColor }}
               >
                 {timeline[active.nextIdx].time}
@@ -506,7 +506,7 @@ const PrayerDisplayTV = () => {
                 }}
               >
                 <p
-                  className="text-[3.2vh] font-bold uppercase mb-[0.5vh]"
+                  className="text-[2.2vh] font-bold uppercase mb-[0.5vh]"
                   style={{ color: primaryColor }}
                 >
                   {timeline[active.nextIdx].id === "jummah"
@@ -520,7 +520,7 @@ const PrayerDisplayTV = () => {
                     : t("ui", "iqamah")}
                 </p>
                 <p
-                  className="text-[8vh] font-black tabular-nums leading-none whitespace-nowrap"
+                  className="text-[7vh] font-black tabular-nums leading-none whitespace-nowrap"
                   style={{ color: accentColor }}
                 >
                   {timeline[active.nextIdx].iq}

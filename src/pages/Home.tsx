@@ -141,7 +141,8 @@ const AdminDashboard = () => {
               {settingsQuery.isPending ? (
                 <span className="animate-pulse">Loading...</span>
               ) : settingsQuery.data?.mosque_name ? (
-                settingsQuery.data.mosque_name
+                // settingsQuery.data.mosque_name
+                "Mosque Admin"
               ) : (
                 "Mosque Admin"
               )}
