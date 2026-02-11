@@ -11,6 +11,8 @@ import MainLayout from "../layouts";
 import PrayerDisplayTV from "../pages/Display";
 import NotFoundPage from "../pages/NotFound";
 import PrayerDisplayTV2 from "../pages/DisplayV2";
+import PrayerDisplaySimpleTV from "../pages/DisplayV3";
+import PrayerDisplaySimpleTVV4 from "../pages/DisplayV4";
 
 export default function AppRoutes() {
   return (
@@ -27,6 +29,9 @@ export default function AppRoutes() {
       </Route>
       <Route path="/display" element={<PrayerDisplayTV />} />
       <Route path="/displayv2" element={<PrayerDisplayTV2 />} />
+      <Route path="/displayv3" element={<PrayerDisplaySimpleTV />} />
+      <Route path="/displayv4" element={<PrayerDisplaySimpleTVV4 />} />
+
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
