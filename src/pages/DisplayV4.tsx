@@ -261,12 +261,12 @@ const PrayerDisplaySimpleTVV4 = () => {
           >
             {displayDay}
           </span>
-          <span className="text-[2.2vh] font-medium opacity-80">
+          <span className="text-[3vh] font-medium opacity-80">
             {now.date()} {displayMonth} {now.year()}
           </span>
         </div>
 
-        <div className="text-[2.2vh] font-medium opacity-80">
+        <div className="text-[3vh] font-medium opacity-80">
           {hijriDate.iDate()} {t("hijri", (hijriDate.iMonth() + 1).toString())}{" "}
           {hijriDate.iYear()}
         </div>
@@ -475,7 +475,7 @@ const PrayerDisplaySimpleTVV4 = () => {
                     className="text-[1.8vh] font-semibold tabular-nums flex items-baseline gap-1"
                     style={{ color: secondaryColor }}
                   >
-                    <span className="opacity-70">IQ:</span>
+                    <span className="opacity-70">{t("ui", "iqamah")}:</span>
                     {typeof formattedIqTime === "object" ? (
                       <>
                         <span>{formattedIqTime.time}</span>
